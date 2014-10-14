@@ -2,14 +2,16 @@
 
 /* Controllers */
 
-var app = angular.module('mr.controllers', []);
+var app = angular.module('kaboom.controllers', []);
 
-app.controller('MainCtrl', ['$scope', function( $scope){
+app.controller('MainCtrl', ['$scope', 'LoginFactory', function( $scope){
+	$scope.user = {};
+	$scope.user.loggedin = false;
 
-    $scope.x = 0;
- 
-    $scope.add = function(a){
-        $scope.x += a;
+    $scope.login = function(){
+    	console.log("Username = " + $scope.user.username);
+    	console.log("Password = " + $scope.user.password);
+    	$scope.user.loggedin = true;
     }
 
 }]);

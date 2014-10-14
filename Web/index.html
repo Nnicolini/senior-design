@@ -29,18 +29,24 @@
 
     </head>
     <body ng-controller="MainCtrl">
-        <div class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <h2>Kaboom</h2>
-                </div>
-            </div>
+        <div ng-if="!user.loggedin">
+            <div ng-include src="'partials/login.html'"></div>
         </div>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-2" ng-include src="'html/partials/side-nav.html'"></div>
-                <div class="col-md-9" ng-view></div>
+        <div ng-if="user.loggedin">
+            <div class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <h2>Kaboom</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-2" ng-include src="'partials/side-nav.html'"></div>
+                    <div class="col-md-9" ng-view></div>
+                </div>
             </div>
         </div>
     </body>

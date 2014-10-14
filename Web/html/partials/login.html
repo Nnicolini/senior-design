@@ -1,0 +1,15 @@
+<div class="login-box">
+	<form role="form" name="loginForm">
+		<div class="form-group">
+			<p>Welcome : {{user.username}}</p>
+			<label for="username">Username</label>
+			<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+		</div>
+		<div class="form-group">
+			<label for="password">Password</label>
+			<input type="text" placeholder="Password" class="form-control" required ng-model="user.password">
+		</div>
+		<button class="btn btn-default" type="submit" ng-click="login()">Submit</button>
+		<p></p>
+	</form>
+</div>

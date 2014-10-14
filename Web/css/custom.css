@@ -3,3 +3,12 @@
     max-height : 300px;
     overflow-x : hidden;
 }
+
+.login-box{
+	padding-top: 20px;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+html, body {margin: 0; padding: 0;}
