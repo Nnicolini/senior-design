@@ -1,0 +1,14 @@
+SERVLET DEPLOYMENT
+
+	-edit java file
+	sudo vim MyServlet.java  
+
+	-compile java file
+	javac MyServlet.java      
+
+	-If it is a new file, edit /var/lib/tomcat7/webapps/ROOT/WEB-INF/web.xml
+	-copy java file into appropriate tomcat directory 
+	sudo cp MyServlet.class /var/lib/tomcat7/webapps/ROOT/WEB-INF/classes
+
+	-Restart tomcat
+	sudo service tomcat7 restart
