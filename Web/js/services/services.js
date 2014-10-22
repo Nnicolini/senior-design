@@ -16,6 +16,9 @@ services.factory('LoginFactory', ['$http', '$q', function($http, $q){
                 deferred.resolve(data);
             });
             return deferred.promise;
+        },
+        register : function(){
+            $http.post();
         }
     };
 }]);

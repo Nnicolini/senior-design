@@ -1,18 +1,19 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import java.net.URLEncoder;
-import java.net.URLDecoder;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class MyServlet extends HttpServlet{
 
@@ -46,13 +47,30 @@ public class MyServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 		
 		try{
-			ResultSet rs = st.executeQuery("SELECT id, username, password FROM users WHERE username LIKE '" 
-				+ user + "' AND password LIKE '" + pass + "';");
+			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
 
 			if(rs.next()){
-				out.println("{\"id\" : "+ rs.getInt("id") + ", " +
-					"\"username\" : \""+ rs.getString("username") +"\", " +
-					"\"password\" : \""+ rs.getString("password") + "\"}");
+				int id = rs.getInt("id");
+				String username = rs.getString("username");
+				String storedPass = rs.getString("password");
+				String salt = rs.getString("salt");
+
+				MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+				String saltedPass = pass + salt;
+				sha256.update(saltedPass.getBytes("UTF-8"));
+				byte[] digest = sha256.digest();
+				
+				String hashedPass = Base64.encodeBase64String(digest);
+				
+				if(storedPass.compareTo(hashedPass) == 0){
+					out.println("{\"id\" : "+ id + ", " +
+							"\"username\" : \""+ username +"\", " +
+							"\"password\" : \""+ storedPass + "\"}");
+				}
+				else{
+					out.println("{}");
+				}
+
 			}
 			else{
 				out.println("{}");

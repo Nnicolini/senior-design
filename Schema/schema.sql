@@ -19,8 +19,9 @@ DROP TABLE IF EXISTS `kaboom`.`users` ;
 
 CREATE TABLE IF NOT EXISTS `kaboom`.`users` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(40) NOT NULL,
-  `password` VARCHAR(40) NOT NULL,
+  `username` VARCHAR(15) NOT NULL,
+  `password` VARCHAR(44) NOT NULL,
+  `salt` VARCHAR(16) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB;
