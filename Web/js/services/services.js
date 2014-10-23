@@ -26,7 +26,7 @@ services.factory('LoginFactory', ['$http', '$q', '$window', function($http, $q, 
     function loginGET(username, password){
         var deferred = $q.defer();
 
-        $http.get("http://128.4.26.235:8080/LoginServlet?username=" +
+        $http.get("https://128.4.26.235:8443/LoginServlet?username=" +
             encodeURIComponent(username) + "&password=" + 
             encodeURIComponent(password), {cache : true}
         ).success(function(data, status, headers, config){
@@ -47,7 +47,7 @@ services.factory('LoginFactory', ['$http', '$q', '$window', function($http, $q, 
     function loginPOST(username, password){
         var deferred = $q.defer();
 
-        $http.post("http://128.4.26.235:8080/LoginServlet", {
+        $http.post("https://128.4.26.235:8443/LoginServlet", {
             username: username,
             password: password
         }, {cache : true}
@@ -79,7 +79,7 @@ services.factory('SignupFactory', ['$http', '$q', '$window', function($http, $q,
     return {
         signup : function(username, password){
             var deferred = $q.defer();
-            $http.get("http://128.4.26.235:8080/SignupServlet?username=" +
+            $http.get("https://128.4.26.235:8443/SignupServlet?username=" +
                 encodeURIComponent(username) + "&password=" + 
                 encodeURIComponent(password), {cache : true}
             ).success(function(data, status, headers, config){

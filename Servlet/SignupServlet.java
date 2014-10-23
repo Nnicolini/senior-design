@@ -29,7 +29,6 @@ public class SignupServlet extends HttpServlet{
 
 	private static Connection conn = null;
 
-	
 	public void init() throws ServletException{
 		try{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
