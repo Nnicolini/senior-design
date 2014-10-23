@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,15 +18,18 @@ import org.apache.commons.codec.binary.Base64;
 
 public class SignupServlet extends HttpServlet{
 
-	private static final long serialVersionUID = 2702524403574618123L;
+	private static final long serialVersionUID = 2702524403574618124L;
+	//Length 10 to get a 16 character long salt
+	private static final int SALT_LENGTH = 10;
 
-	static Connection conn = null;
-	static Statement st = null;
-	
-	static final String URL = "jdbc:mysql://128.4.26.235:3306/";
-	static final String DBNAME = "kaboom";
-	static final String USERNAME = "root";
-	static final String PASSWORD = "";
+	private static final String URL = "jdbc:mysql://128.4.26.235:3306/";
+	private static final String DBNAME = "kaboom";
+	private static final String USERNAME = "root";
+	private static final String PASSWORD = "";
+
+	private static Connection conn = null;
+	private static Statement st = null;
+
 	
 	public void init() throws ServletException{
 		try{
@@ -45,38 +49,37 @@ public class SignupServlet extends HttpServlet{
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
+
+		byte[] saltBytes = new byte[SALT_LENGTH];
+		SecureRandom sr = new SecureRandom();
+		sr.nextBytes(saltBytes);
+		String salt = Base64.encodeBase64String(saltBytes);
+		out.println(salt);
 		
 		try{
+			MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+			String saltedPass = pass + salt;
+			sha256.update(saltedPass.getBytes("UTF-8"));
+			byte[] digest = sha256.digest();
+			String hashedPass = Base64.encodeBase64String(digest);
+			out.println(hashedPass);
+
+			//Check if username is already taken
 			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
 
 			if(rs.next()){
-				int id = rs.getInt("id");
-				String username = rs.getString("username");
-				String storedPass = rs.getString("password");
-				String salt = rs.getString("salt");
-
-				MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-				String saltedPass = pass + salt;
-				sha256.update(saltedPass.getBytes("UTF-8"));
-				byte[] digest = sha256.digest();
-				
-				String hashedPass = Base64.encodeBase64String(digest);
-				
-				if(storedPass.compareTo(hashedPass) == 0){
-					out.println("{\"id\" : "+ id + ", " +
-							"\"username\" : \""+ username +"\", " +
-							"\"password\" : \""+ storedPass + "\"}");
-				}
-				else{
-					response.sendError(401);
-				}
-
-			}
-			else{
 				response.sendError(401);
+			} 
+			else{
+				st.executeUpdate("INSERT INTO users(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
+
+				rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+				if(rs.next()){
+					int id = rs.getInt("id");
+					out.println("{\"id\" : "+ id + ", " + "\"username\" : \""+ user +"\"}");
+				}
 			}
 
-			
 		} catch(Exception e){
 			e.printStackTrace();
 			out.println("Exception e - " + e.getMessage());

@@ -37,10 +37,13 @@
             <div class="navbar navbar-default">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <h2>Kaboom</h2>
+                        <div style="font-size: 30px">
+                            <img ng-src="images/customLogo.png" onload="this.width/=1.4"> Kaboom
+                        </div>
                     </div>
 
-                    <div class="btn-group pull-right">
+                    <div class="pull-right" ng-controller="LogoutCtrl">
+                        Hello, {{userInfo.username}}
                         <button class="btn btn-default" ng-click="logout()">Log out</button>
                     </div>
                 </div>

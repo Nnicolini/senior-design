@@ -1,4 +1,8 @@
 <div class="login-box">
+	<div style="font-size: 40px">
+		<img ng-src="images/customLogo.png"> Kaboom
+	</div>
+
 	<form role="form" name="loginForm">
 		<div class="form-group">
 			<label for="username">Username</label>
@@ -8,7 +12,7 @@
 			<label for="password">Password</label>
 			<input type="password" placeholder="Password" class="form-control" required ng-model="user.password">
 		</div>
-		<button class="btn btn-default" type="submit" ng-click="login()">Submit</button>
+		<button class="btn btn-primary" type="submit" ng-click="login()">Log in</button>
 	</form>
 
 	<div align="right">

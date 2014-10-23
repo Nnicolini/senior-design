@@ -4,26 +4,29 @@
 
 var app = angular.module('kaboom.controllers', []);
 
-app.controller('MainCtrl', ['$rootScope', '$scope', '$location', function($rootScope, $scope, $location){
+app.controller('MainCtrl', ['$rootScope', '$scope',  function($rootScope, $scope){
 	
-	function isUndefinedOrNull(val){
-		return (angular.isUndefined(val) || val === null);
-	}
-
 	$scope.titleCheck = function(){
-		return isUndefinedOrNull($rootScope.title) || $rootScope.title == 'Login' || $rootScope.title == 'Sign Up';
-	}
-
-	$scope.logout = function(){
-		$scope.userInfo = null;
-		$location.path("/");
+		var title = $rootScope.title;
+		return angular.isUndefined(title) || title === null || title == 'Login' || title == 'Sign Up';
 	}
 
 }]);
 
-app.controller('LoginCtrl', ['$scope', '$location', '$window', 'LoginFactory', function($scope, $location, $window, LoginFactory){
-	$scope.userInfo = null;
+app.controller('LogoutCtrl', ['$location', '$scope', '$window', 'LoginFactory', function($location, $scope, $window, LoginFactory){
 
+	$scope.userInfo = LoginFactory.getUserInfo();
+
+	$scope.logout = function(){
+		$window.sessionStorage["userInfo"] = null;
+		LoginFactory.setUserInfo({});
+		$location.path("/Not/A/Real/URL");
+	}
+
+}]);
+
+app.controller('LoginCtrl', ['$location','$scope', '$window', 'LoginFactory', function($location, $scope, $window, LoginFactory){
+	
 	$scope.login = function(){
 		LoginFactory.login($scope.user.username, $scope.user.password)
 			.then(function (result){
@@ -31,21 +34,30 @@ app.controller('LoginCtrl', ['$scope', '$location', '$window', 'LoginFactory', f
 				$location.path("/");
 			}, function (error){
 				$window.alert("Invalid credentials");
-				console.log(error);
 			});
 	};
 
 }]);
 
-app.controller('SignupCtrl', ['$scope', '$location', '$window', 'SignupFactory', function($scope, $location, $window, SignupFactory){
+app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','SignupFactory', function($location, $scope, $window, LoginFactory, SignupFactory){
 
 	$scope.signup = function(){
-		if($scope.user.password !== $scope.user.password2){
-			$window.alert("Passwords don't match");
+		if($scope.user.password != null && $scope.user.password2 != null){
+			if($scope.user.password !== $scope.user.password2){
+				$window.alert("Passwords don't match");
+			}
+			else{
+				SignupFactory.signup($scope.user.username, $scope.user.password)
+					.then(function (result){
+						$scope.userInfo = result;
+						LoginFactory.setUserInfo(result);
+						$location.path("/");
+					}, function (error){
+						$window.alert("That username is already taken");
+					});
+			}
 		}
-		else{
-			SignupFactory.signup($scope.user.username, $scope.user.password)
-		}
+
 	}
 
 }]);

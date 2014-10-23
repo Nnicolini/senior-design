@@ -1,14 +1,24 @@
 <div class="login-box">
+	<div style="font-size: 40px">
+		<img ng-src="images/customLogo.png"> Kaboom
+	</div>
+	
 	<form role="form" name="signupForm">
 		<div class="form-group">
-			Please enter a username <input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+			<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
 		</div>
 		<div class="form-group">
-			Please enter a password <input type="password" placeholder="Password" class="form-control" required ng-model="user.password">
+			<input type="password" placeholder="Enter password" class="form-control" required ng-model="user.password">
 		</div>
 		<div class="form-group">
-			Please confirm password <input type="password" placeholder="Password" class="form-control" required ng-model="user.password2">
+			<input type="password" placeholder="Confirm password" class="form-control" required ng-model="user.password2">
 		</div>
-		<button class="btn btn-default" type="submit" ng-click="signup()">Submit</button>
+		<button class="btn btn-success" type="submit" ng-click="signup()">Creat account!</button>
+		<button class="btn btn-danger pull-right" ng-click="">Cancel</button>
 	</form>
+	<p><p>
+
+	<div align="right">
+		Woops! Already have an acount? <a href="#/login" tooltip="Register">Go back.</a>
+	</div>
 </div>

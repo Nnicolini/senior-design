@@ -18,14 +18,14 @@ import org.apache.commons.codec.binary.Base64;
 public class LoginServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
+		
+	private static final String URL = "jdbc:mysql://128.4.26.235:3306/";
+	private static final String DBNAME = "kaboom";
+	private static final String USERNAME = "root";
+	private static final String PASSWORD = "";
 
-	static Connection conn = null;
-	static Statement st = null;
-	
-	static final String URL = "jdbc:mysql://128.4.26.235:3306/";
-	static final String DBNAME = "kaboom";
-	static final String USERNAME = "root";
-	static final String PASSWORD = "";
+	private static Connection conn = null;
+	private static Statement st = null;
 	
 	public void init() throws ServletException{
 		try{
@@ -64,8 +64,7 @@ public class LoginServlet extends HttpServlet{
 				
 				if(storedPass.compareTo(hashedPass) == 0){
 					out.println("{\"id\" : "+ id + ", " +
-							"\"username\" : \""+ username +"\", " +
-							"\"password\" : \""+ storedPass + "\"}");
+							"\"username\" : \""+ username +"\"}");
 				}
 				else{
 					response.sendError(401);
