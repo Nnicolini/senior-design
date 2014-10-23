@@ -1,0 +1,14 @@
+<div class="login-box">
+	<form role="form" name="signupForm">
+		<div class="form-group">
+			Please enter a username <input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+		</div>
+		<div class="form-group">
+			Please enter a password <input type="password" placeholder="Password" class="form-control" required ng-model="user.password">
+		</div>
+		<div class="form-group">
+			Please confirm password <input type="password" placeholder="Password" class="form-control" required ng-model="user.password2">
+		</div>
+		<button class="btn btn-default" type="submit" ng-click="signup()">Submit</button>
+	</form>
+</div>
