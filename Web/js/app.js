@@ -10,7 +10,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -25,7 +25,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -40,7 +40,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -55,7 +55,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});

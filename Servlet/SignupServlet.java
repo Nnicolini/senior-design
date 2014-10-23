@@ -28,14 +28,12 @@ public class SignupServlet extends HttpServlet{
 	private static final String PASSWORD = "";
 
 	private static Connection conn = null;
-	private static Statement st = null;
 
 	
 	public void init() throws ServletException{
 		try{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
-			st = conn.createStatement();
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -54,7 +52,6 @@ public class SignupServlet extends HttpServlet{
 		SecureRandom sr = new SecureRandom();
 		sr.nextBytes(saltBytes);
 		String salt = Base64.encodeBase64String(saltBytes);
-		out.println(salt);
 		
 		try{
 			MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
@@ -62,7 +59,9 @@ public class SignupServlet extends HttpServlet{
 			sha256.update(saltedPass.getBytes("UTF-8"));
 			byte[] digest = sha256.digest();
 			String hashedPass = Base64.encodeBase64String(digest);
-			out.println(hashedPass);
+
+
+			Statement st = conn.createStatement();	
 
 			//Check if username is already taken
 			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
@@ -71,14 +70,18 @@ public class SignupServlet extends HttpServlet{
 				response.sendError(401);
 			} 
 			else{
+				st = conn.createStatement();
 				st.executeUpdate("INSERT INTO users(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
 
+				st = conn.createStatement();
 				rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
 				if(rs.next()){
 					int id = rs.getInt("id");
 					out.println("{\"id\" : "+ id + ", " + "\"username\" : \""+ user +"\"}");
 				}
 			}
+
+			st.close();
 
 		} catch(Exception e){
 			e.printStackTrace();
@@ -92,7 +95,6 @@ public class SignupServlet extends HttpServlet{
 	
 	public void destroy(){
 		try {
-			st.close();
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

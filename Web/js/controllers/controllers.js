@@ -49,8 +49,12 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','
 			else{
 				SignupFactory.signup($scope.user.username, $scope.user.password)
 					.then(function (result){
-						$scope.userInfo = result;
-						LoginFactory.setUserInfo(result);
+						$scope.userInfo = {
+			                id: result['id'],
+			                username: result['username']
+			            };
+						$window.sessionStorage["userInfo"] = JSON.stringify($scope.userInfo);
+						LoginFactory.setUserInfo($scope.userInfo);
 						$location.path("/");
 					}, function (error){
 						$window.alert("That username is already taken");

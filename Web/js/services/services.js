@@ -19,6 +19,7 @@ services.factory('LoginFactory', ['$http', '$q', '$window', function($http, $q, 
     }
 
     function setUserInfo(info){
+        console.log(info);
         userInfo = info;
     }
 
