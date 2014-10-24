@@ -4,7 +4,7 @@
 
 var services = angular.module('kaboom.services', []);
 
-services.factory('LoginFactory', ['$http', '$q', '$window', function($http, $q, $window){
+services.factory('LoginFactory', ['$http', '$location','$q', '$window', function($http, $location, $q, $window){
     var userInfo = {};
 
     function init(){
@@ -19,7 +19,6 @@ services.factory('LoginFactory', ['$http', '$q', '$window', function($http, $q, 
     }
 
     function setUserInfo(info){
-        console.log(info);
         userInfo = info;
     }
 

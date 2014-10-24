@@ -25,13 +25,11 @@ public class LoginServlet extends HttpServlet{
 	private static final String PASSWORD = "";
 
 	private static Connection conn = null;
-	private static Statement st = null;
 	
 	public void init() throws ServletException{
 		try{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
-			st = conn.createStatement();
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -47,6 +45,7 @@ public class LoginServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 		
 		try{
+			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
 
 			if(rs.next()){
@@ -99,7 +98,6 @@ public class LoginServlet extends HttpServlet{
 	
 	public void destroy(){
 		try {
-			st.close();
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -30,8 +30,8 @@ app.controller('LoginCtrl', ['$location','$scope', '$window', 'LoginFactory', fu
 	$scope.login = function(){
 		LoginFactory.login($scope.user.username, $scope.user.password)
 			.then(function (result){
-				$scope.userInfo = result;
 				$location.path("/");
+				$scope.userInfo = result;
 			}, function (error){
 				$window.alert("Invalid credentials");
 			});
@@ -61,7 +61,10 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','
 					});
 			}
 		}
+	}
 
+	$scope.cancel = function(){
+		$location.path("/login");
 	}
 
 }]);

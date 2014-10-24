@@ -66,12 +66,34 @@ app.config(function($routeProvider){
     $routeProvider.when("/login", {
         templateUrl : "html/login.html",
         controller : "LoginCtrl",
-        title : "Login"
+        title : "Login",
+        resolve: {
+            auth : ['$q', '$window', 'LoginFactory', function($q, $window, LoginFactory){
+                var userInfo = LoginFactory.getUserInfo();
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                    $window.alert("You are already logged in");
+                    return $q.reject({authenticated : false});
+                } else{
+                    return $q.when(userInfo);
+                }
+            }]
+        }
     });
     $routeProvider.when("/signup", {
         templateUrl : "html/sign-up.html",
         controller : "SignupCtrl",
-        title : "Sign Up"
+        title : "Sign Up",
+        resolve: {
+            auth : ['$q', '$window', 'LoginFactory', function($q, $window, LoginFactory){
+                var userInfo = LoginFactory.getUserInfo();
+                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                    $window.alert("You are already signed up");
+                    return $q.reject({authenticated : false});
+                } else{
+                    return $q.when(userInfo);
+                }
+            }]
+        }
     });
 
     $routeProvider.otherwise({redirectTo : "/"});
