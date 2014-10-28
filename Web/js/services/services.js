@@ -30,7 +30,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
             encodeURIComponent(password), {cache : true}
         ).success(function(data, status, headers, config){
             userInfo = {
-                id: data['id'],
+                user_id: data['id'],
                 username: data['username']
             };
             $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
@@ -38,7 +38,6 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
         }).error(function(data, status, headers, config){
             deferred.reject(data);
         });
-
         return deferred.promise;
     }
 
@@ -52,7 +51,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
         }, {cache : true}
         ).success(function(data, status, headers, config){
             userInfo = {
-                id: data['id'],
+                user_id: data['id'],
                 username: data['username']
             };
             $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
@@ -60,7 +59,6 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
         }).error(function(data, status, headers, config){
             deferred.reject(data);
         });
-
         return deferred.promise;
     }
 
@@ -83,7 +81,7 @@ services.factory('SignupFactory', ['$http', '$q', '$window', function($http, $q,
                 encodeURIComponent(password), {cache : true}
             ).success(function(data, status, headers, config){
                 var userInfo = {
-                    id: data['id'],
+                    user_id: data['id'],
                     username: data['username']
                 };
                 $window.sessionStorage["userInfo"] = JSON.stringify(userInfo);
@@ -91,9 +89,23 @@ services.factory('SignupFactory', ['$http', '$q', '$window', function($http, $q,
             }).error(function(data, status, headers, config){
                 deferred.reject(data);
             });
-
             return deferred.promise;
         }
-    
+    }
+}]);
+
+services.factory('AccountsFactory', ['$http', '$q', function($http, $q){
+    return {
+        listAll : function(user_id){
+            var deferred = $q.defer();
+            $http.get("https://128.4.26.235:8443/AccountServlet?id=" +
+                encodeURIComponent(user_id), {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        }
     }
 }]);

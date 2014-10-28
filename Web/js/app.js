@@ -10,7 +10,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -20,12 +20,12 @@ app.config(function($routeProvider){
     });
     $routeProvider.when("/balance",{
         templateUrl : "html/partials/balance.html",
-        controller: "MainCtrl",
+        controller: "AccountsCtrl",
         title: "Balance",
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -40,7 +40,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -55,7 +55,7 @@ app.config(function($routeProvider){
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     return $q.when(userInfo);
                 } else{
                     return $q.reject({authenticated : false});
@@ -70,7 +70,7 @@ app.config(function($routeProvider){
         resolve: {
             auth : ['$q', '$window', 'LoginFactory', function($q, $window, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     $window.alert("You are already logged in");
                     return $q.reject({authenticated : false});
                 } else{
@@ -86,7 +86,7 @@ app.config(function($routeProvider){
         resolve: {
             auth : ['$q', '$window', 'LoginFactory', function($q, $window, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
-                if(userInfo != null && userInfo.hasOwnProperty("id")){
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
                     $window.alert("You are already signed up");
                     return $q.reject({authenticated : false});
                 } else{

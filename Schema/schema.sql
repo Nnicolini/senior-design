@@ -27,6 +27,29 @@ CREATE TABLE IF NOT EXISTS `kaboom`.`users` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
+-- Table `kaboom`.`user_info`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `kaboom`.`user_info` ;
+
+CREATE TABLE IF NOT EXISTS `kaboom`.`user_info` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `first_name` VARCHAR(50),
+  `last_name` VARCHAR(50),
+  `email` VARCHAR(50),
+  `address` VARCHAR(150),
+  `phone_number` VARCHAR(10),
+
+  PRIMARY KEY (`id`),
+  INDEX (`user_id`),
+
+  FOREIGN KEY (`user_id`)
+    REFERENCES users(`id`),
+
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
 -- Table `kaboom`.`accounts`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `kaboom`.`accounts` ;
@@ -34,9 +57,10 @@ DROP TABLE IF EXISTS `kaboom`.`accounts` ;
 CREATE TABLE IF NOT EXISTS `kaboom`.`accounts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `balance` DECIMAL NOT NULL,
+  `balance` DECIMAL(10,2) NOT NULL,
+  `name` VARCHAR(50),
   `type` VARCHAR(20),
-  `interest_rate` DECIMAL,
+  `interest_rate` DECIMAL(10,4),
 
   PRIMARY KEY (`id`),
   INDEX (`user_id`),
@@ -56,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `kaboom`.`history` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `account_id` INT NOT NULL,
   `transaction_type` VARCHAR(20) NOT NULL,
-  `amount` DECIMAL,
+  `amount` DECIMAL(10,2),
   `datetime` DATETIME,
 
   PRIMARY KEY (`id`),
