@@ -57,6 +57,7 @@ DROP TABLE IF EXISTS `kaboom`.`accounts` ;
 CREATE TABLE IF NOT EXISTS `kaboom`.`accounts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
+  `number` VARCHAR(10) NOT NULL,
   `balance` DECIMAL(10,2) NOT NULL,
   `name` VARCHAR(50),
   `type` VARCHAR(20),

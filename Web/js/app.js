@@ -18,10 +18,10 @@ app.config(function($routeProvider){
             }]
         }
     });
-    $routeProvider.when("/balance",{
-        templateUrl : "html/partials/balance.html",
+    $routeProvider.when("/accounts",{
+        templateUrl : "html/partials/accounts.html",
         controller: "AccountsCtrl",
-        title: "Balance",
+        title: "Accounts",
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
@@ -33,10 +33,10 @@ app.config(function($routeProvider){
             }]
         }
     });
-    $routeProvider.when("/transaction",{
-        templateUrl : "html/partials/transaction.html",
+    $routeProvider.when("/transfer",{
+        templateUrl : "html/partials/transfer.html",
         controller: "MainCtrl",
-        title: "Transaction",
+        title: "Transfer",
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
                 var userInfo = LoginFactory.getUserInfo();
@@ -48,9 +48,9 @@ app.config(function($routeProvider){
             }]
         }
     });
-    $routeProvider.when("/history",{
+    $routeProvider.when("/history/:id",{
         templateUrl : "html/partials/history.html",
-        controller: "MainCtrl",
+        controller: "HistoryCtrl",
         title: "History",
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){

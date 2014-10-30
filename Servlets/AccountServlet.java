@@ -29,6 +29,7 @@ public class AccountServlet extends HttpServlet{
 	//POJO Account class
 	private class Account {
 		int id;
+		String number;
 		double balance;
 		String name;
 		String type;
@@ -61,6 +62,7 @@ public class AccountServlet extends HttpServlet{
 			while(rs.next()){
 				Account account = new Account();
 				account.id = rs.getInt("id");
+				account.number = rs.getString("number");
 				account.balance = rs.getDouble("balance");
 				account.name = rs.getString("name");
 				account.type = rs.getString("type");

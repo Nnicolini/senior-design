@@ -77,20 +77,35 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','
 	}
 ]);
 
-app.controller('AccountsCtrl', ['$scope', '$window', 'AccountsFactory', 
-	function($scope, $window, AccountsFactory){
+app.controller('AccountsCtrl', ['$location', '$scope', '$window', 'AccountsFactory', 
+	function($location, $scope, $window, AccountsFactory){
 
 		AccountsFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
 			.then(function (result){
 
 				//Force decimal values to show 2 decimal places 
 				for(var i = 0; i < result.accounts.length; i++){
-					result.accounts[i].balance = Number(result.accounts[i].balance).toFixed(2);
+					result.accounts[i].balance = "$" + Number(result.accounts[i].balance).toFixed(2);
 					result.accounts[i].interest_rate += "%";
 				}
 
 				$scope.accounts = result.accounts;
 			});
+
+		$scope.viewHistory = function(account_number){
+			$location.path("/history/" + account_number);
+		}
+
+	}
+]);
+
+app.controller('HistoryCtrl', ['$location', '$scope', '$window', 
+	function($location, $scope, $window){
+		$scope.account = {};
+
+		$scope.getNumber = function(){
+			return $location.path().split("/")[2];
+		}
 
 
 	}
