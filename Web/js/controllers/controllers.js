@@ -77,15 +77,17 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','
 	}
 ]);
 
-app.controller('AccountsCtrl', ['$location', '$scope', '$window', 'AccountsFactory', 
-	function($location, $scope, $window, AccountsFactory){
+app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 
+	function($location, $scope, $rootScope, $window, AccountsFactory){
 
 		AccountsFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
 			.then(function (result){
 
-				//Force decimal values to show 2 decimal places 
 				for(var i = 0; i < result.accounts.length; i++){
+					//Force decimal values to show 2 decimal places 
 					result.accounts[i].balance = "$" + Number(result.accounts[i].balance).toFixed(2);
+
+					//Force interest rate to also show a % sign
 					result.accounts[i].interest_rate += "%";
 				}
 
@@ -94,19 +96,56 @@ app.controller('AccountsCtrl', ['$location', '$scope', '$window', 'AccountsFacto
 
 		$scope.viewHistory = function(account_number){
 			$location.path("/history/" + account_number);
+			$rootScope.historyNumber = account_number;
 		}
 
 	}
 ]);
 
-app.controller('HistoryCtrl', ['$location', '$scope', '$window', 
-	function($location, $scope, $window){
-		$scope.account = {};
+app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 'HistoryFactory',
+	function($location, $scope, $rootScope, $window, AccountsFactory, HistoryFactory){
+		
+		/*
+		 * Decided to add $rootScope to allow the passing of the account number from the Accounts page
+		 * instead of parsing URL for account number (which could be a security issue similar to SQL injection)
+		 * then having to do a check against the user_id's list of all accounts and the given number
+		 */
 
-		$scope.getNumber = function(){
+
+		//Parses the URL path for the desired account number
+		function getNumber(){
 			return $location.path().split("/")[2];
 		}
 
+		$scope.history = [];
+
+		HistoryFactory.listAll($rootScope.historyNumber)
+			.then(function(result){
+
+				for(var i = 0; i < result.history.length; i++){
+					$scope.history.push(result.history[i]);
+
+					//Set the color of the amount displayed
+					//Force decimal values to show 2 decimal places
+					if(Number(result.history[i].amount) > 0){
+						$scope.history[i].display_color = "green";
+						$scope.history[i].amount = "+$" + Number(result.history[i].amount).toFixed(2);
+					}
+					else if (Number(result.history[i].amount) < 0){
+						$scope.history[i].display_color = "red";
+						$scope.history[i].amount = "-$" + Number(result.history[i].amount).toFixed(2);
+					} else{
+						$scope.history[i].display_color = "white";
+						$scope.history[i].amount = "$" + Number(result.history[i].amount).toFixed(2);
+					}
+				}
+
+			});
+
+		//Callback function for the "Go back" button to return to the Accounts page
+		$scope.cancel = function(){
+			$location.path("/accounts");
+		}
 
 	}
 ]);

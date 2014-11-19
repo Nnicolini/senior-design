@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-public class AccountServlet extends HttpServlet{
+public class HistoryServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
 		
@@ -26,14 +27,13 @@ public class AccountServlet extends HttpServlet{
 
 	private static Connection conn = null;
 	
-	//POJO Account class
-	private class Account {
+	//POJO History class
+	private class History {
 		int id;
-		String number;
-		double balance;
-		String name;
-		String type;
-		double interest_rate;
+		String account_number;
+		String transaction_type;
+		double amount;
+		Timestamp datetime;
 	}
 	
 	public void init() throws ServletException{
@@ -45,45 +45,43 @@ public class AccountServlet extends HttpServlet{
 		}
 	}
 	
-	//Used to get the list of all accounts associated with a given user_id
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
-		String user_id = URLDecoder.decode(request.getParameter("id"), "UTF-8");
+		String account_number = URLDecoder.decode(request.getParameter("number"), "UTF-8");
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		
-		ArrayList<Account> accounts = new ArrayList<Account>();
+		ArrayList<History> history = new ArrayList<History>();
 
+		Statement st;
+		ResultSet rs;
+		
 		try{
-			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE user_id = " + user_id + ";");
+			st = conn.createStatement();
+			rs = st.executeQuery("SELECT * FROM history WHERE account_number = " + account_number + ";");
 			
 			while(rs.next()){
-				Account account = new Account();
-				account.id = rs.getInt("id");
-				account.number = rs.getString("number");
-				account.balance = rs.getDouble("balance");
-				account.name = rs.getString("name");
-				account.type = rs.getString("type");
-				account.interest_rate = rs.getDouble("interest_rate");
-				accounts.add(account);
+				History h = new History();
+				h.id = rs.getInt("id");
+				h.account_number = rs.getString("account_number");
+				h.transaction_type = rs.getString("transaction_type");
+				h.amount = rs.getDouble("amount");
+				h.datetime = rs.getTimestamp("datetime");
+				history.add(h);
 			}
 			
 			Gson gson = new Gson();
 			StringBuilder sb = new StringBuilder();
-			sb.append("{\"accounts\":[");
-			for(int i = 0; i < accounts.size(); i++){
-				sb.append(gson.toJson(accounts.get(i)));
-				if(i != accounts.size()-1) sb.append(",");
+			sb.append("{\"history\":[");
+			for(int i = 0; i < history.size(); i++){
+				sb.append(gson.toJson(history.get(i)));
+				if(i != history.size()-1) sb.append(",");
 			}
 			sb.append("]}");
 
 			out.println(sb.toString());
-
-			rs.close();
-			st.close();
 			
 		} catch(Exception e){
 			e.printStackTrace();
@@ -95,28 +93,11 @@ public class AccountServlet extends HttpServlet{
 		} 
 	}
 
-	//Should be used to create a new account
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
 		doGet(request, response);
 	}
-
-	//Should be used to update a given account (deposit/withdraw)
-	public void doPut(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException
-	{
-		doGet(request, response);
-	}
-
-	//Should be used to delete a given account
-	public void doDelete(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException
-	{
-		doGet(request, response);
-	}
-
-
 	
 	public void destroy(){
 		try {

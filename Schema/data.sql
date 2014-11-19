@@ -7,3 +7,4 @@ INSERT INTO accounts(user_id, `number`, balance) VALUES(1, '1111111113', 1200.00
 INSERT INTO accounts(user_id, `number`, balance) VALUES(1, '1111111114', 0.00);
 INSERT INTO accounts(user_id, `number`, balance) VALUES(1, '1111111115', 25.75);
 
+INSERT INTO history(`account_number`, `transaction_type`, `amount`, `datetime`) VALUES('1111111111', 'Deposit', 10.00, NOW());

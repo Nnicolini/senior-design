@@ -109,3 +109,19 @@ services.factory('AccountsFactory', ['$http', '$q', function($http, $q){
         }
     }
 }]);
+
+services.factory('HistoryFactory', ['$http', '$q', function($http, $q){
+    return {
+        listAll : function(account_number){
+            var deferred = $q.defer();
+            $http.get("https://128.4.26.235:8443/HistoryServlet?number=" +
+                encodeURIComponent(account_number), {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        }
+    }
+}]);
