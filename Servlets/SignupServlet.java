@@ -22,7 +22,7 @@ public class SignupServlet extends HttpServlet{
 	//Length 10 to get a 16 character long salt
 	private static final int SALT_LENGTH = 10;
 
-	private static final String URL = "jdbc:mysql://128.4.26.235:3306/";
+	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
 	private static final String DBNAME = "kaboom";
 	private static final String USERNAME = "root";
 	private static final String PASSWORD = "";

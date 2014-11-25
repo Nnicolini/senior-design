@@ -25,7 +25,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
     function loginGET(username, password){
         var deferred = $q.defer();
 
-        $http.get("https://128.4.26.235:8443/LoginServlet?username=" +
+        $http.get("https://128.4.26.194:8443/LoginServlet?username=" +
             encodeURIComponent(username) + "&password=" + 
             encodeURIComponent(password), {cache : true}
         ).success(function(data, status, headers, config){
@@ -45,7 +45,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
     function loginPOST(username, password){
         var deferred = $q.defer();
 
-        $http.post("https://128.4.26.235:8443/LoginServlet", {
+        $http.post("https://128.4.26.194:8443/LoginServlet", {
             username: username,
             password: password
         }, {cache : true}
@@ -76,7 +76,7 @@ services.factory('SignupFactory', ['$http', '$q', '$window', function($http, $q,
     return {
         signup : function(username, password){
             var deferred = $q.defer();
-            $http.get("https://128.4.26.235:8443/SignupServlet?username=" +
+            $http.get("https://128.4.26.194:8443/SignupServlet?username=" +
                 encodeURIComponent(username) + "&password=" + 
                 encodeURIComponent(password), {cache : true}
             ).success(function(data, status, headers, config){
@@ -94,11 +94,62 @@ services.factory('SignupFactory', ['$http', '$q', '$window', function($http, $q,
     }
 }]);
 
+services.factory('AccountFactory', ['$http', '$q', function($http, $q){
+    return {
+        listAll : function(user_id){
+            var deferred = $q.defer();
+            $http.get("https://128.4.26.194:8443/AccountServlet?id=" +
+                encodeURIComponent(user_id), {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        },
+        createAccount : function(newAccount){
+            var deferred = $q.defer();
+            $http.post("https://128.4.26.194:8443/AccountServlet", 
+                newAccount, {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        },
+        updateAccount : function(updatedAccount){
+            var deferred = $q.defer();
+            $http.put("https://128.4.26.194:8443/AccountServlet", 
+                updatedAccount, {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+
+        },
+        deleteAccount : function(account_number){
+            var deferred = $q.defer();
+            $http.delete("https://128.4.26.194:8443/AccountServlet?number=" +
+                encodeURIComponent(account_number), {cache : true}
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+
+        }
+    }
+}]);
+
 services.factory('AccountsFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(user_id){
             var deferred = $q.defer();
-            $http.get("https://128.4.26.235:8443/AccountServlet?id=" +
+            $http.get("https://128.4.26.194:8443/AccountServlet?id=" +
                 encodeURIComponent(user_id), {cache : true}
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -114,7 +165,7 @@ services.factory('HistoryFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(account_number){
             var deferred = $q.defer();
-            $http.get("https://128.4.26.235:8443/HistoryServlet?number=" +
+            $http.get("https://128.4.26.194:8443/HistoryServlet?number=" +
                 encodeURIComponent(account_number), {cache : true}
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);

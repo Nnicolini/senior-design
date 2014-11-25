@@ -20,7 +20,7 @@ public class HistoryServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
 		
-	private static final String URL = "jdbc:mysql://128.4.26.235:3306/";
+	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
 	private static final String DBNAME = "kaboom";
 	private static final String USERNAME = "root";
 	private static final String PASSWORD = "";

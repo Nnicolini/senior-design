@@ -96,6 +96,22 @@ app.config(function($routeProvider){
         }
     });
 
+    $routeProvider.when("/test", {
+        templateUrl : "html/partials/test.html",
+        controller : "TestCtrl",
+        title : "Test",
+        resolve : {
+            auth : ['$q', 'LoginFactory', function($q, LoginFactory){
+                var userInfo = LoginFactory.getUserInfo();
+                if(userInfo != null && userInfo.hasOwnProperty("user_id")){
+                    return $q.when(userInfo);
+                } else {
+                    return $q.reject({authenticated : false});
+                }
+            }]
+        }
+    });
+
     $routeProvider.otherwise({redirectTo : "/"});
 });
 
