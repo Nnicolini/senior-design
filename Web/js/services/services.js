@@ -99,7 +99,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         listAll : function(user_id){
             var deferred = $q.defer();
             $http.get("https://128.4.26.194:8443/AccountServlet?id=" +
-                encodeURIComponent(user_id), {cache : true}
+                encodeURIComponent(user_id)
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){
@@ -110,7 +110,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         createAccount : function(newAccount){
             var deferred = $q.defer();
             $http.post("https://128.4.26.194:8443/AccountServlet", 
-                newAccount, {cache : true}
+                newAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){
@@ -121,7 +121,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         updateAccount : function(updatedAccount){
             var deferred = $q.defer();
             $http.put("https://128.4.26.194:8443/AccountServlet", 
-                updatedAccount, {cache : true}
+                updatedAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){
@@ -133,7 +133,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         deleteAccount : function(account_number){
             var deferred = $q.defer();
             $http.delete("https://128.4.26.194:8443/AccountServlet?number=" +
-                encodeURIComponent(account_number), {cache : true}
+                encodeURIComponent(account_number)
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){

@@ -199,7 +199,7 @@ app.controller('TestCtrl', ['$location', '$scope', '$rootScope', '$window', 'Acc
 
 			$scope.account = updatedAccount;
 
-            AccountFactory.createAccount(updatedAccount);
+            AccountFactory.updateAccount(updatedAccount);
 
 		}
 

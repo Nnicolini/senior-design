@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.sql.Connection;
@@ -7,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -164,22 +167,36 @@ public class AccountServlet extends HttpServlet{
 	public void doPut(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
-		String user_id = request.getParameter("user_id");
-		String number = request.getParameter("number");
-		String balance = request.getParameter("balance");
-		String name = request.getParameter("name");
-		String type = request.getParameter("type");
-		String interest_rate = request.getParameter("interest_rate");
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		String data = URLDecoder.decode(br.readLine(), "UTF-8");
+		
+		HashMap<String, String> parameters = new HashMap<String, String>();
+		
+		String[] params = data.split("&");
+		for(int i = 0; i < params.length; i++){
+			String[] pair = params[i].split("=");
+			parameters.put(pair[0], pair[1]);
+		}
+
+		String user_id = parameters.get("user_id");
+		String number = parameters.get("number");
+		String balance = parameters.get("balance");
+		String name = parameters.get("name");
+		String type = parameters.get("type");
+		String interest_rate = parameters.get("interest_rate");
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
+
+		out.println(data);
 
 		ArrayList<Account> accounts = new ArrayList<Account>();
 
 		try{
 			Statement st = conn.createStatement();
-			st.executeUpdate("UPDATE accounts"
-				+ "SET balance="+balance+", name'"+name+"', type='"+type+"', interest_rate="+interest_rate+" " 
+			st.executeUpdate("UPDATE accounts "
+				+ "SET balance="+balance+", name='"+name+"', type='"+type+"', interest_rate="+interest_rate+" " 
 				+ "WHERE user_id="+user_id+" AND number='"+number+"';");
 
 			st = conn.createStatement();
