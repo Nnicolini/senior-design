@@ -1,0 +1,10 @@
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '3513024685', 4299.71, 'xK52AqUwzZ3W8oO2ag', 'Checking', 0.0016);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '4982146827', 874.74, 'Qi', 'Checking', 0.003);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '0625810129', 537.31, 'NQt7', 'Checking', 0.0175);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '7076963403', 7626.51, '4gqtvFAjVVbUrR65mNHYLD', 'Savings', 0.0211);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '4316783579', 46.21, 'SLIOSeYzJZVq', 'Checking', 0.0203);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '7696753207', 2746.08, 'LRBEaKWy', 'Savings', 0.068);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '3028299194', 3190.11, 'ZKWelYaFcWPdSSTgqDlJ4k', 'Savings', 0.0109);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '2105079230', 1488.12, 'RNoUpt7oMDrqKOE7D93UIqjduLJqCwLp9mA', 'Savings', 0.0157);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '7257544847', 117.44, 'XRpd', 'Checking', 0.0115);
+INSERT INTO accounts(user_id, number, balance, name, type, interest_rate) VALUES(1, '6247047596', 578.75, 'i', 'Savings', 0.0);
