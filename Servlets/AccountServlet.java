@@ -60,6 +60,7 @@ public class AccountServlet extends HttpServlet{
 		ArrayList<Account> accounts = new ArrayList<Account>();
 
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE user_id = " + user_id + ";");
 			
@@ -121,6 +122,7 @@ public class AccountServlet extends HttpServlet{
 		ArrayList<Account> accounts = new ArrayList<Account>();
 
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("INSERT INTO accounts(user_id, number, balance, name, type, interest_rate)" + 
 				"VALUES("+user_id+",'"+number+"',"+balance+",'"+name+"','"+type+"',"+interest_rate+");");
@@ -179,7 +181,6 @@ public class AccountServlet extends HttpServlet{
 			parameters.put(pair[0], pair[1]);
 		}
 
-		String user_id = parameters.get("user_id");
 		String number = parameters.get("number");
 		String balance = parameters.get("balance");
 		String name = parameters.get("name");
@@ -194,13 +195,14 @@ public class AccountServlet extends HttpServlet{
 		ArrayList<Account> accounts = new ArrayList<Account>();
 
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("UPDATE accounts "
 				+ "SET balance="+balance+", name='"+name+"', type='"+type+"', interest_rate="+interest_rate+" " 
-				+ "WHERE user_id="+user_id+" AND number='"+number+"';");
+				+ "WHERE number='"+number+"';");
 
 			st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE user_id = " + user_id + " AND number = '"+number+"';");
+			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE number = '"+number+"';");
 			
 			while(rs.next()){
 				Account account = new Account();
@@ -247,6 +249,7 @@ public class AccountServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("DELETE FROM accounts WHERE number='"+number+"';");
 			

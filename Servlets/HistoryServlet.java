@@ -59,6 +59,7 @@ public class HistoryServlet extends HttpServlet{
 		ResultSet rs;
 		
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			st = conn.createStatement();
 			rs = st.executeQuery("SELECT * FROM history WHERE account_number = " + account_number + ";");
 			

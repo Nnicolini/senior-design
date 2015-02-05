@@ -45,6 +45,7 @@ public class LoginServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 		
 		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
 

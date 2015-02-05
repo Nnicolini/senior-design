@@ -59,7 +59,7 @@ public class SignupServlet extends HttpServlet{
 			byte[] digest = sha256.digest();
 			String hashedPass = Base64.encodeBase64String(digest);
 
-
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();	
 
 			//Check if username is already taken

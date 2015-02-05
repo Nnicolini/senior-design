@@ -213,3 +213,50 @@ app.controller('TestCtrl', ['$location', '$scope', '$rootScope', '$window', 'Acc
 
 	}
 ]);
+
+app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountFactory', 
+	function($location, $scope, $rootScope, $window, AccountFactory){
+
+		$scope.accountsList = [];
+
+		AccountFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
+			.then(function (result){
+
+				for(var i = 0; i < result.accounts.length; i++){
+					//Force decimal values to show 2 decimal places 
+					result.accounts[i].balance = Number(result.accounts[i].balance).toFixed(2);
+
+					$scope.accountsList.push(result.accounts[i].name + " XXXXXX" 
+						+ result.accounts[i].number.substring(6, 11) + " (Avail. balance = $" 
+						+ result.accounts[i].balance + ")");
+				}
+
+				$scope.accounts = result.accounts;
+
+			});
+
+		$scope.fromAccount = "Select Any";
+		$scope.toAccount = "Select Any";
+
+		$scope.setFromAccount = function(fromAccount){
+			$scope.fromAccount = fromAccount;
+		}
+
+		$scope.setToAccount = function(toAccount){
+			$scope.toAccount = toAccount;
+		}
+
+		$scope.transfer = function(){
+			var fromIndex = $scope.accountsList.indexOf($scope.fromAccount);
+			var toIndex = $scope.accountsList.indexOf($scope.toAccount);
+
+			var transferAmount = parseInt($scope.transferAmount);
+			$scope.accounts[fromIndex].balance = parseFloat($scope.accounts[fromIndex].balance) - transferAmount;
+			$scope.accounts[toIndex].balance = parseFloat($scope.accounts[toIndex].balance) + transferAmount;
+
+            AccountFactory.updateAccount($scope.accounts[fromIndex]);
+            AccountFactory.updateAccount($scope.accounts[toIndex]);
+		}
+	}
+]);
+

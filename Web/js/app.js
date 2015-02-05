@@ -35,7 +35,7 @@ app.config(function($routeProvider){
     });
     $routeProvider.when("/transfer",{
         templateUrl : "html/partials/transfer.html",
-        controller: "MainCtrl",
+        controller: "TransferCtrl",
         title: "Transfer",
         resolve : {
             auth : ['$q', 'LoginFactory', function($q, LoginFactory){
