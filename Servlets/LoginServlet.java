@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,6 +19,8 @@ import org.apache.commons.codec.binary.Base64;
 public class LoginServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
+	//Length 10 to get a 16 character long salt
+	private static final int SALT_LENGTH = 10;
 		
 	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
 	private static final String DBNAME = "kaboom";
@@ -89,12 +92,63 @@ public class LoginServlet extends HttpServlet{
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
-		doGet(request, response);
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+
+		String user = request.getParameter("username");
+		out.println("username = " + user);
+		String pass = request.getParameter("password");
+		out.println("password = " + pass);
+
+		byte[] saltBytes = new byte[SALT_LENGTH];
+		SecureRandom sr = new SecureRandom();
+		sr.nextBytes(saltBytes);
+		String salt = Base64.encodeBase64String(saltBytes);
+		
+		try{
+			MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+			String saltedPass = pass + salt;
+			sha256.update(saltedPass.getBytes("UTF-8"));
+			byte[] digest = sha256.digest();
+			String hashedPass = Base64.encodeBase64String(digest);
+
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			Statement st = conn.createStatement();	
+
+			//Check if username is already taken
+			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+
+			if(rs.next()){
+				response.sendError(401);
+			} 
+			else{
+				st = conn.createStatement();
+				st.executeUpdate("INSERT INTO users(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
+
+				st = conn.createStatement();
+				rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+				if(rs.next()){
+					int id = rs.getInt("id");
+					out.println("{\"id\" : "+ id + ", " + "\"username\" : \""+ user +"\"}");
+				}
+			}
+
+			rs.close();
+			st.close();
+
+		} catch(Exception e){
+			e.printStackTrace();
+			out.println("Exception e - " + e.getMessage());
+			StackTraceElement[] ste = e.getStackTrace();
+			for(int i = 0; i < ste.length; i++){
+				out.println(ste[i]);
+			}
+		}
 
 		//These headers don't show up in the response headers for some reason
-		response.setHeader("Access-Control-Allow-Credentials", "true");
-		response.setHeader("Access-Control-Allow-Origin", "http://128.4.26.235");
-		response.setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin,Access-Control-Allow-Credentials");
+		//response.setHeader("Access-Control-Allow-Credentials", "true");
+		//response.setHeader("Access-Control-Allow-Origin", "http://128.4.26.235");
+		//response.setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin,Access-Control-Allow-Credentials");
 	}
 	
 	public void destroy(){

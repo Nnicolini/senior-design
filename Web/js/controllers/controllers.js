@@ -45,8 +45,8 @@ app.controller('LoginCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	}
 ]);
 
-app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','SignupFactory', 
-	function($location, $scope, $window, LoginFactory, SignupFactory){
+app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory', 
+	function($location, $scope, $window, LoginFactory){
 
 		$scope.signup = function(){
 			if($scope.user.password != null && $scope.user.password2 != null){
@@ -54,7 +54,7 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory','
 					$window.alert("Passwords don't match");
 				}
 				else{
-					SignupFactory.signup($scope.user.username, $scope.user.password)
+					LoginFactory.signup($scope.user.username, $scope.user.password)
 						.then(function (result){
 							$scope.userInfo = {
 				                user_id: result['id'],
