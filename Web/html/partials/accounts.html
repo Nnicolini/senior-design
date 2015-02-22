@@ -1,5 +1,7 @@
 <h3>Account Balances</h3>
 <div ng-init="">
+    <p>
+    <h4>Cash Accounts</h4>
     <table class="table table-striped table-condensed">
         <thead>
             <tr>
@@ -12,13 +14,42 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="account in accounts">
-                <td>{{ account.number }}</td>
-                <td>{{ account.name }}</td>
-                <td style="text-align: right">{{ account.balance }}</td>
-                <td>{{ account.type }}</td>
-                <td>{{ account.interest_rate }}</td>
-                <td><button class="btn btn-small btn-primary" ng-click="viewHistory(account.number)">View History</button></td>
+            <tr ng-repeat="cash_account in cash_accounts">
+                <td>{{ cash_account.number }}</td>
+                <td>{{ cash_account.name }}</td>
+                <td style="text-align: right">{{ cash_account.balance }}</td>
+                <td>{{ cash_account.type }}</td>
+                <td>{{ cash_account.interest_rate }}</td>
+                <td><button class="btn btn-small btn-primary" ng-click="viewHistory(cash_account.number)">View History</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+    <h4>Credit Accounts</h4>
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th style="min-width: 80px;">Number</th>
+                <th style="min-width: 80px;">CVV</th>
+                <th style="min-width: 80px;">Name</th>
+                <th style="min-width: 80px;">Type</th>
+                <th style="min-width: 80px;">Expiry Date</th>
+                <th style="min-width: 80px;">Balance</th>
+                <th style="min-width: 80px;">Limit</th>
+                <th style="width: 20px;">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="credit_account in credit_accounts">
+                <td>{{ credit_account.number }}</td>
+                <td>{{ credit_account.cvv }}</td>
+                <td>{{ credit_account.name }}</td>
+                <td>{{ credit_account.type }}</td>
+                <td>{{ credit_account.expiry_date }}</td>
+                <td style="text-align: right">{{ credit_account.balance }}</td>
+                <td style="text-align: right">{{ credit_account.limit }}</td>
+                <td><button class="btn btn-small btn-primary" ng-click="viewHistory(cash_account.number)">View History</button></td>
             </tr>
         </tbody>
     </table>

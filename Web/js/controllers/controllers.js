@@ -83,15 +83,21 @@ app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 
 		AccountsFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
 			.then(function (result){
 
-				for(var i = 0; i < result.accounts.length; i++){
+				for(var i = 0; i < result.cash_accounts.length; i++){
 					//Force decimal values to show 2 decimal places 
-					result.accounts[i].balance = "$" + Number(result.accounts[i].balance).toFixed(2);
+					result.cash_accounts[i].balance = "$" + Number(result.cash_accounts[i].balance).toFixed(2);
 
 					//Force interest rate to also show a % sign
-					result.accounts[i].interest_rate += "%";
+					result.cash_accounts[i].interest_rate += "%";
 				}
+				$scope.cash_accounts = result.cash_accounts;
 
-				$scope.accounts = result.accounts;
+				for(var i = 0; i < result.credit_accounts.length; i++){
+					//Force decimal values to show 2 decimal places 
+					result.credit_accounts[i].balance = "$" + Number(result.credit_accounts[i].balance).toFixed(2);
+					result.credit_accounts[i].limit = "$" + Number(result.credit_accounts[i].limit).toFixed(2);
+				}
+				$scope.credit_accounts = result.credit_accounts;
 			});
 
 		$scope.viewHistory = function(account_number){

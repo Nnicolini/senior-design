@@ -6,18 +6,18 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema kaboom
+-- Schema kaching
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `kaboom` ;
-CREATE SCHEMA IF NOT EXISTS `kaboom` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
-USE `kaboom` ;
+DROP SCHEMA IF EXISTS `kaching` ;
+CREATE SCHEMA IF NOT EXISTS `kaching` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `kaching` ;
 
 -- -----------------------------------------------------
--- Table `kaboom`.`users`
+-- Table `kaching`.`user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `kaboom`.`users` ;
+DROP TABLE IF EXISTS `kaching`.`user` ;
 
-CREATE TABLE IF NOT EXISTS `kaboom`.`users` (
+CREATE TABLE IF NOT EXISTS `kaching`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(15) NOT NULL,
   `password` VARCHAR(44) NOT NULL,
@@ -27,11 +27,11 @@ CREATE TABLE IF NOT EXISTS `kaboom`.`users` (
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `kaboom`.`user_info`
+-- Table `kaching`.`user_info`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `kaboom`.`user_info` ;
+DROP TABLE IF EXISTS `kaching`.`user_info` ;
 
-CREATE TABLE IF NOT EXISTS `kaboom`.`user_info` (
+CREATE TABLE IF NOT EXISTS `kaching`.`user_info` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `first_name` VARCHAR(50),
@@ -44,40 +44,87 @@ CREATE TABLE IF NOT EXISTS `kaboom`.`user_info` (
   INDEX (`user_id`),
 
   FOREIGN KEY (`user_id`)
-    REFERENCES users(`id`),
+    REFERENCES user(`id`),
 
   UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `kaboom`.`accounts`
+-- Table `kaching`.`account_type`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `kaboom`.`accounts` ;
+DROP TABLE IF EXISTS `kaching`.`account_type` ;
 
-CREATE TABLE IF NOT EXISTS `kaboom`.`accounts` (
+CREATE TABLE IF NOT EXISTS `kaching`.`account_type` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(20),
+
+  PRIMARY KEY (`id`),
+
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `kaching`.`account`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `kaching`.`account` ;
+
+CREATE TABLE IF NOT EXISTS `kaching`.`account` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
+  `account_type_id` INT NOT NULL,
   `number` VARCHAR(10) NOT NULL,
-  `balance` DECIMAL(10,2) NOT NULL,
-  `name` VARCHAR(50),
-  `type` VARCHAR(20),
-  `interest_rate` DECIMAL(10,4),
+  `name` VARCHAR(50) NOT NULL,
+  `interest_rate` DECIMAL(10, 4) NOT NULL,
+  `balance` DECIMAL(10, 2) NOT NULL,
+  `overdraft` DECIMAL(10, 2),
 
   PRIMARY KEY (`id`),
   INDEX (`user_id`),
 
   FOREIGN KEY (`user_id`)
-    REFERENCES users(`id`),
+    REFERENCES user(`id`),
+
+  FOREIGN KEY (`account_type_id`)
+    REFERENCES account_type(`id`),
 
   UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
--- Table `kaboom`.`history`
+-- Table `kaching`.`credit_account`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `kaboom`.`history` ;
+DROP TABLE IF EXISTS `kaching`.`credit_account` ;
 
-CREATE TABLE IF NOT EXISTS `kaboom`.`history` (
+CREATE TABLE IF NOT EXISTS `kaching`.`credit_account` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `account_type_id` INT NOT NULL,
+  `number` VARCHAR(16) NOT NULL,
+  `cvv` VARCHAR(3) NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
+  `expiry_date` DATE NOT NULL,
+  `balance` DECIMAL(10, 2) NOT NULL,
+  `limit` DECIMAL(10, 2) NOT NULL,
+
+  PRIMARY KEY (`id`),
+  INDEX (`user_id`),
+
+  FOREIGN KEY (`user_id`)
+    REFERENCES user(`id`),
+
+  FOREIGN KEY (`account_type_id`)
+    REFERENCES account_type(`id`),
+
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `kaching`.`history`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `kaching`.`history` ;
+
+CREATE TABLE IF NOT EXISTS `kaching`.`history` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `account_number` VARCHAR(10) NOT NULL,
   `transaction_type` VARCHAR(20) NOT NULL,

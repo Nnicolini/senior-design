@@ -23,20 +23,31 @@ public class AccountServlet extends HttpServlet{
 	private static final long serialVersionUID = 2702524403574618123L;
 		
 	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaboom";
+	private static final String DBNAME = "kaching";
 	private static final String USERNAME = "root";
 	private static final String PASSWORD = "";
 
 	private static Connection conn = null;
 	
-	//POJO Account class
-	private class Account {
-		int id;
+	//Account super class
+	private abstract class Account {
 		String number;
-		double balance;
 		String name;
 		String type;
+		double balance;
+	}
+
+	//POJO CashAccount class
+	private class CashAccount extends Account{
 		double interest_rate;
+		double overdraft;
+	}
+
+	//POJO CreditAccount class
+	private class CreditAccount extends Account{
+		String cvv;
+		String expiry_date;
+		double limit;
 	}
 	
 	public void init() throws ServletException{
@@ -57,30 +68,59 @@ public class AccountServlet extends HttpServlet{
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		
-		ArrayList<Account> accounts = new ArrayList<Account>();
+		ArrayList<Account> cashAccounts = new ArrayList<Account>();
+		ArrayList<Account> creditAccounts = new ArrayList<Account>();
 
 		try{
 			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE user_id = " + user_id + ";");
+			ResultSet rs = st.executeQuery("SELECT number, name, type, interest_rate, balance, overdraft " 
+				+ "FROM account "
+				+ "LEFT JOIN (account_type) ON (account_type.id = account_type_id) "
+				+ "WHERE user_id = " + user_id + ";");
 			
 			while(rs.next()){
-				Account account = new Account();
-				account.id = rs.getInt("id");
+				CashAccount account = new CashAccount();
 				account.number = rs.getString("number");
-				account.balance = rs.getDouble("balance");
 				account.name = rs.getString("name");
 				account.type = rs.getString("type");
 				account.interest_rate = rs.getDouble("interest_rate");
-				accounts.add(account);
+				account.balance = rs.getDouble("balance");
+				account.overdraft = rs.getDouble("overdraft");
+				cashAccounts.add(account);
 			}
 			
 			Gson gson = new Gson();
 			StringBuilder sb = new StringBuilder();
-			sb.append("{\"accounts\":[");
-			for(int i = 0; i < accounts.size(); i++){
-				sb.append(gson.toJson(accounts.get(i)));
-				if(i != accounts.size()-1) sb.append(",");
+			sb.append("{\"cash_accounts\":[");
+			for(int i = 0; i < cashAccounts.size(); i++){
+				sb.append(gson.toJson(cashAccounts.get(i)));
+				if(i != cashAccounts.size()-1) sb.append(",");
+			}
+			sb.append("], \"credit_accounts\":[");
+
+
+			st = conn.createStatement();
+			rs = st.executeQuery("SELECT number, cvv, name, type, expiry_date, balance, `limit` "
+				+ "FROM credit_account "
+				+ "LEFT JOIN (account_type) ON (account_type.id = account_type_id) "
+				+ "WHERE user_id = " + user_id + ";");
+			
+			while(rs.next()){
+				CreditAccount account = new CreditAccount();
+				account.number = rs.getString("number");
+				account.cvv = rs.getString("cvv");
+				account.name = rs.getString("name");
+				account.type = rs.getString("type");
+				account.expiry_date = rs.getString("expiry_date");
+				account.balance = rs.getDouble("balance");
+				account.limit = rs.getDouble("limit");
+				creditAccounts.add(account);
+			}
+			
+			for(int i = 0; i < creditAccounts.size(); i++){
+				sb.append(gson.toJson(creditAccounts.get(i)));
+				if(i != creditAccounts.size()-1) sb.append(",");
 			}
 			sb.append("]}");
 
@@ -99,7 +139,7 @@ public class AccountServlet extends HttpServlet{
 		} 
 	}
 
-	//Should be used to create a new account
+	//Should be used to create a new CashAccount
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
@@ -107,46 +147,52 @@ public class AccountServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 		
 		String user_id = request.getParameter("user_id");
-		out.println("user_id = " + user_id);
 		String number = request.getParameter("number");
-		out.println("number = " + number);
-		String balance = request.getParameter("balance");
-		out.println("balance = " + balance);
 		String name = request.getParameter("name");
-		out.println("name = " + name);
 		String type = request.getParameter("type");
-		out.println("type = " + type);
+		String balance = request.getParameter("balance");
+		
+		//Non-credit parameters
 		String interest_rate = request.getParameter("interest_rate");
-		out.println("interest_rate = " + interest_rate);
+		String overdraft = request.getParameter("overdraft");
 
-		ArrayList<Account> accounts = new ArrayList<Account>();
+		//Credit parameters
+		String cvv = request.getParameter("cvv");
+		String expiry_date = request.getParameter("expiry_date");
+		String limit = request.getParameter("limit");
+		
+
+		ArrayList<Account> cashAccounts = new ArrayList<Account>();
 
 		try{
 			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
-			st.executeUpdate("INSERT INTO accounts(user_id, number, balance, name, type, interest_rate)" + 
-				"VALUES("+user_id+",'"+number+"',"+balance+",'"+name+"','"+type+"',"+interest_rate+");");
+			st.executeUpdate("INSERT INTO account(user_id, account_type_id, number, name, interest_rate, balance, overdraft)" + 
+				"VALUES("+user_id+", (SELECT id FROM account_type WHERE `type` = '" + type + "'),'"+number+"','"+name+"',"+interest_rate+","+balance+","+overdraft+");");
 
 			st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE user_id = " + user_id + " AND number = '"+number+"';");
+			ResultSet rs = st.executeQuery("SELECT number, name, type, interest_rate, balance, overdraft "
+				+ "FROM account "
+				+ "LEFT JOIN (account_type) ON (account_type.id = account_type_id) "
+				+ "WHERE user_id = " + user_id + ";");
 			
 			while(rs.next()){
-				Account account = new Account();
-				account.id = rs.getInt("id");
+				CashAccount account = new CashAccount();
 				account.number = rs.getString("number");
-				account.balance = rs.getDouble("balance");
 				account.name = rs.getString("name");
 				account.type = rs.getString("type");
 				account.interest_rate = rs.getDouble("interest_rate");
-				accounts.add(account);
+				account.balance = rs.getDouble("balance");
+				account.overdraft = rs.getDouble("overdraft");
+				cashAccounts.add(account);
 			}
 			
 			Gson gson = new Gson();
 			StringBuilder sb = new StringBuilder();
 			sb.append("{\"accounts\":[");
-			for(int i = 0; i < accounts.size(); i++){
-				sb.append(gson.toJson(accounts.get(i)));
-				if(i != accounts.size()-1) sb.append(",");
+			for(int i = 0; i < cashAccounts.size(); i++){
+				sb.append(gson.toJson(cashAccounts.get(i)));
+				if(i != cashAccounts.size()-1) sb.append(",");
 			}
 			sb.append("]}");
 
@@ -165,11 +211,10 @@ public class AccountServlet extends HttpServlet{
 		} 
 	}
 
-	//Should be used to update a given account (deposit/withdraw)
+	//Should be used to update a given CashAccount (deposit/withdraw)
 	public void doPut(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
 		String data = URLDecoder.decode(br.readLine(), "UTF-8");
 		
@@ -182,10 +227,18 @@ public class AccountServlet extends HttpServlet{
 		}
 
 		String number = parameters.get("number");
-		String balance = parameters.get("balance");
 		String name = parameters.get("name");
 		String type = parameters.get("type");
+		String balance = parameters.get("balance");
+		
+		//Non-credit parameters
 		String interest_rate = parameters.get("interest_rate");
+		String overdraft = parameters.get("overdraft");
+
+		//Credit parameters
+		String cvv = parameters.get("cvv");
+		String expiry_date = parameters.get("expiry_date");
+		String limit = parameters.get("limit");
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
@@ -202,11 +255,10 @@ public class AccountServlet extends HttpServlet{
 				+ "WHERE number='"+number+"';");
 
 			st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM accounts WHERE number = '"+number+"';");
+			ResultSet rs = st.executeQuery("SELECT * FROM account WHERE number = '"+number+"';");
 			
 			while(rs.next()){
-				Account account = new Account();
-				account.id = rs.getInt("id");
+				CashAccount account = new CashAccount();
 				account.number = rs.getString("number");
 				account.balance = rs.getDouble("balance");
 				account.name = rs.getString("name");
@@ -239,7 +291,7 @@ public class AccountServlet extends HttpServlet{
 		} 	
 	}
 
-	//Should be used to delete a given account by number
+	//Should be used to delete a given CashAccount by number
 	public void doDelete(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
@@ -251,7 +303,7 @@ public class AccountServlet extends HttpServlet{
 		try{
 			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
-			st.executeUpdate("DELETE FROM accounts WHERE number='"+number+"';");
+			st.executeUpdate("DELETE FROM account WHERE number='"+number+"';");
 			
 		} catch(Exception e){
 			e.printStackTrace();
