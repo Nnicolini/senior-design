@@ -1,0 +1,25 @@
+<div>    
+    <h4>Cash Accounts</h4>
+    <table class="table table-striped table-condensed">
+        <thead>
+            <tr>
+                <th style="min-width: 80px;">Number</th>
+                <th style="min-width: 80px;">Name</th>
+                <th style="min-width: 80px;">Balance</th>
+                <th style="min-width: 80px;">Type</th>
+                <th style="min-width: 80px;">Interest Rate</th>
+                <th style="width: 20px;">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="cash_account in cash_accounts">
+                <td>{{ cash_account.number }}</td>
+                <td>{{ cash_account.name }}</td>
+                <td style="text-align: right">{{ cash_account.balance }}</td>
+                <td>{{ cash_account.type }}</td>
+                <td>{{ cash_account.interest_rate }}</td>
+                <td><button class="btn btn-small btn-primary" ng-click="viewHistory(cash_account.number)">View History</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

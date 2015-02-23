@@ -228,16 +228,16 @@ app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 
 		AccountFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
 			.then(function (result){
 
-				for(var i = 0; i < result.accounts.length; i++){
+				for(var i = 0; i < result.cash_accounts.length; i++){
 					//Force decimal values to show 2 decimal places 
-					result.accounts[i].balance = Number(result.accounts[i].balance).toFixed(2);
+					result.cash_accounts[i].balance = Number(result.cash_accounts[i].balance).toFixed(2);
 
-					$scope.accountsList.push(result.accounts[i].name + " XXXXXX" 
-						+ result.accounts[i].number.substring(6, 11) + " (Avail. balance = $" 
-						+ result.accounts[i].balance + ")");
+					$scope.accountsList.push(result.cash_accounts[i].name + " XXXXXX" 
+						+ result.cash_accounts[i].number.substring(6, 11) + " (Avail. balance = $" 
+						+ result.cash_accounts[i].balance + ")");
 				}
 
-				$scope.accounts = result.accounts;
+				$scope.accounts = result.cash_accounts;
 
 			});
 
