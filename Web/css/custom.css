@@ -1,14 +1,48 @@
+
+html, body {margin: 0; padding: 0; height: 100%;}
+
 .scrollable-menu {
     height : auto;
     max-height : 300px;
     overflow-x : hidden;
 }
 
-.login-box{
+.login-box {
 	padding-top: 20px;
 	width: 400px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-html, body {margin: 0; padding: 0;}
+.login-background {
+	height: 100%;
+	background: rgba(253, 181, 21, 0.5); 
+}
+
+.btn-purple {
+	background-color: rgba(120, 41, 127, 0.95);
+	color: #ffffff;
+}
+
+.btn-purple:hover {
+	background-color: rgba(120, 41, 127, 1);
+	color: #ffffff;
+}
+
+.btn-yellow {
+	background-color: rgba(253, 181, 21, 0.95);
+	color: #000000;
+}
+
+.btn-yellow:hover {
+	background-color: rgba(253, 181, 21, 1);
+	color: #000000;
+}
+
+.link-purple {
+	color: rgba(120, 41, 127, 0.95);
+}
+
+.link-purple:hover {
+	color: rgba(120, 41, 127, 1);
+}

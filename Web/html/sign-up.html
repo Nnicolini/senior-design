@@ -1,24 +1,26 @@
-<div class="login-box">
-	<div style="font-size: 40px">
-		<img ng-src="images/customLogo.png"> Kaboom
-	</div>
-	
-	<form role="form" name="signupForm">
-		<div class="form-group">
-			<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+<div class="login-background">
+	<div class="login-box">
+		<div>
+			<img ng-src="images/KaChing-logo-1.png" height="120" width="400">
 		</div>
-		<div class="form-group">
-			<input type="password" placeholder="Enter password" class="form-control" required ng-model="user.password">
-		</div>
-		<div class="form-group">
-			<input type="password" placeholder="Confirm password" class="form-control" required ng-model="user.password2">
-		</div>
-		<button class="btn btn-success" type="submit" ng-click="signup()">Create account!</button>
-		<button class="btn btn-danger pull-right" ng-click="cancel()">Cancel</button>
-	</form>
-	<p><p>
+		
+		<form role="form" name="signupForm">
+			<div class="form-group">
+				<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+			</div>
+			<div class="form-group">
+				<input type="password" placeholder="Enter password" class="form-control" required ng-model="user.password">
+			</div>
+			<div class="form-group">
+				<input type="password" placeholder="Confirm password" class="form-control" required ng-model="user.password2">
+			</div>
+			<button class="btn btn-purple" type="submit" ng-click="signup()">Create account!</button>
+			<button class="btn btn-yellow pull-right" ng-click="cancel()">Cancel</button>
+		</form>
+		<p><p>
 
-	<div align="right">
-		Woops! Already have an acount? <a href="#/login">Go back.</a>
+		<div align="right">
+			Woops! Already have an acount? <a href="#/login" class="link-purple">Go back.</a>
+		</div>
 	</div>
 </div>

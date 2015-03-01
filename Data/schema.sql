@@ -126,7 +126,7 @@ DROP TABLE IF EXISTS `kaching`.`history` ;
 
 CREATE TABLE IF NOT EXISTS `kaching`.`history` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `account_number` VARCHAR(10) NOT NULL,
+  `account_number` VARCHAR(16) NOT NULL,
   `transaction_type` VARCHAR(20) NOT NULL,
   `amount` DECIMAL(10,2),
   `datetime` DATETIME,

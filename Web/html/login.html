@@ -1,21 +1,23 @@
-<div class="login-box">
-	<div style="font-size: 40px">
-		<img ng-src="images/customLogo.png"> KaChing
-	</div>
-
-	<form role="form" name="loginForm">
-		<div class="form-group">
-			<label for="username">Username</label>
-			<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+<div class="login-background">	
+	<div class="login-box">
+		<div>
+			<img ng-src="images/KaChing-logo-1.png" height="120" width="400">
 		</div>
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input type="password" placeholder="Password" class="form-control" required ng-model="user.password">
-		</div>
-		<button class="btn btn-primary" type="submit" ng-click="login()">Log in</button>
-	</form>
 
-	<div align="right">
-		Don't have an acount yet? <a href="#/signup" tooltip="Register">Sign up here!</a>
+		<form role="form" name="loginForm">
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" placeholder="Enter username" class="form-control" required ng-model="user.username">
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" placeholder="Password" class="form-control" required ng-model="user.password">
+			</div>
+			<button class="btn btn-purple" type="submit" ng-click="login()">Log in</button>
+		</form>
+
+		<div align="right">
+			Don't have an acount yet? <a href="#/signup" tooltip="Register" class="link-purple">Sign up here!</a>
+		</div>
 	</div>
 </div>

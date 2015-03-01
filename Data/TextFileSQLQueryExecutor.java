@@ -10,7 +10,7 @@ import java.sql.Statement;
 public class TextFileSQLQueryExecutor {
 
 	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaboom";
+	private static final String DBNAME = "kaching";
 	private static final String USERNAME = "root";
 	private static final String PASSWORD = "";
 	

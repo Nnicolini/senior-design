@@ -1,6 +1,6 @@
 "use strict";
 
-var app = angular.module("Kaboom", ['ngRoute', 'ui.bootstrap', 'kaboom.services', 'kaboom.controllers']);
+var app = angular.module("KaChing", ['ngRoute', 'ui.bootstrap', 'kaching.services', 'kaching.controllers']);
 
 app.config(function($routeProvider){
     $routeProvider.when("/", {

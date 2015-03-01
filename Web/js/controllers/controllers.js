@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-var app = angular.module('kaboom.controllers', []);
+var app = angular.module('kaching.controllers', []);
 
 app.controller('MainCtrl', ['$rootScope', '$scope', 
 	function($rootScope, $scope){

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="Kaboom" id="ng-app">
+<html lang="en" ng-app="KaChing" id="ng-app">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE-edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title ng-bind="'Kaboom - ' + title">Kaboom</title>
+        <title ng-bind="'KaChing - ' + title">KaChing</title>
 
         <!-- Include CSS -->
         <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -29,8 +29,8 @@
 
     </head>
     <body ng-controller="MainCtrl">        
-        <div ng-if="titleCheck()">
-            <div ng-view></div>
+        <div ng-if="titleCheck()" style="height: 100%;">
+            <div ng-view style="height: 100%;"></div>
         </div>
 
         <div ng-if="!titleCheck()">
@@ -38,13 +38,13 @@
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <div style="font-size: 30px">
-                            <img ng-src="images/customLogo.png" onload="this.width/=1.5"> KaChing
+                            <img ng-src="images/KaChing-logo-1.png" onload="this.width/=3">
                         </div>
                     </div>
 
                     <div class="pull-right" ng-controller="LogoutCtrl">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> 
+                            <button type="button" class="btn btn-purple dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> 
                                 {{userInfo.username}} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
