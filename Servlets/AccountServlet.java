@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,11 +23,15 @@ import com.google.gson.Gson;
 public class AccountServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
-		
-	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaching";
-	private static final String USERNAME = "root";
-	private static final String PASSWORD = "";
+	private static final String PROPERTIESFILENAME = "db.properties";
+	
+	private static String URL;
+	private static String HOST;
+	private static String PORT;
+	private static String DBNAME;
+	private static String USERNAME;
+	private static String PASSWORD;
+	
 
 	private static Connection conn = null;
 	
@@ -52,8 +58,24 @@ public class AccountServlet extends HttpServlet{
 	
 	public void init() throws ServletException{
 		try{
+			Properties properties = new Properties();
+			
+			try {
+				properties.load(getServletContext().getResourceAsStream("/WEB-INF/" + PROPERTIESFILENAME));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			HOST = properties.getProperty("host");
+			PORT = properties.getProperty("port");
+		    DBNAME = properties.getProperty("dbname");
+		    USERNAME = properties.getProperty("username");
+		    PASSWORD = properties.getProperty("password");
+		    
+		    URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DBNAME;
+	    
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -67,12 +89,12 @@ public class AccountServlet extends HttpServlet{
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
-		
+
 		ArrayList<Account> cashAccounts = new ArrayList<Account>();
 		ArrayList<Account> creditAccounts = new ArrayList<Account>();
 
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT number, name, type, interest_rate, balance, overdraft " 
 				+ "FROM account "
@@ -165,7 +187,7 @@ public class AccountServlet extends HttpServlet{
 		ArrayList<Account> cashAccounts = new ArrayList<Account>();
 
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("INSERT INTO account(user_id, account_type_id, number, name, interest_rate, balance, overdraft)" + 
 				"VALUES("+user_id+", (SELECT id FROM account_type WHERE `type` = '" + type + "'),'"+number+"','"+name+"',"+interest_rate+","+balance+","+overdraft+");");
@@ -248,7 +270,7 @@ public class AccountServlet extends HttpServlet{
 		ArrayList<Account> accounts = new ArrayList<Account>();
 
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("UPDATE accounts "
 				+ "SET balance="+balance+", name='"+name+"', type='"+type+"', interest_rate="+interest_rate+" " 
@@ -301,7 +323,7 @@ public class AccountServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			st.executeUpdate("DELETE FROM account WHERE number='"+number+"';");
 			
@@ -323,3 +345,4 @@ public class AccountServlet extends HttpServlet{
 		}
 	}
 }
+

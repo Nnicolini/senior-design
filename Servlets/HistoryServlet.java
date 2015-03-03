@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.sql.Connection;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,11 +21,14 @@ import com.google.gson.Gson;
 public class HistoryServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
-		
-	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaboom";
-	private static final String USERNAME = "root";
-	private static final String PASSWORD = "";
+	private static final String PROPERTIESFILENAME = "db.properties";
+	
+	private static String URL;
+	private static String HOST;
+	private static String PORT;
+	private static String DBNAME;
+	private static String USERNAME;
+	private static String PASSWORD;
 
 	private static Connection conn = null;
 	
@@ -38,8 +43,24 @@ public class HistoryServlet extends HttpServlet{
 	
 	public void init() throws ServletException{
 		try{
+			Properties properties = new Properties();
+		
+			try {
+				properties.load(getServletContext().getResourceAsStream("/WEB-INF/" + PROPERTIESFILENAME));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			HOST = properties.getProperty("host");
+			PORT = properties.getProperty("port");
+		    DBNAME = properties.getProperty("dbname");
+		    USERNAME = properties.getProperty("username");
+		    PASSWORD = properties.getProperty("password");
+		    
+		    URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DBNAME;
+			
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -59,7 +80,7 @@ public class HistoryServlet extends HttpServlet{
 		ResultSet rs;
 		
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			st = conn.createStatement();
 			rs = st.executeQuery("SELECT * FROM history WHERE account_number = " + account_number + ";");
 			

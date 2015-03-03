@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -8,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,20 +21,47 @@ import org.apache.commons.codec.binary.Base64;
 public class LoginServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
+	private static final String PROPERTIESFILENAME = "db.properties";
 	//Length 10 to get a 16 character long salt
 	private static final int SALT_LENGTH = 10;
 		
-	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaboom";
-	private static final String USERNAME = "root";
-	private static final String PASSWORD = "";
+	private static String URL;
+	private static String HOST;
+	private static String PORT;
+	private static String DBNAME;
+	private static String USERNAME;
+	private static String PASSWORD;
 
 	private static Connection conn = null;
 	
 	public void init() throws ServletException{
 		try{
+			Properties properties = new Properties();
+			
+			try {
+				//Load via relative path (or absolute path)
+				//InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTIESFILENAME);
+				//properties.load(inputStream);
+
+				//Load via thread context
+				//properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(PROPERTIESFILENAME));
+
+				//Load via servlet context
+				properties.load(getServletContext().getResourceAsStream("/WEB-INF/" + PROPERTIESFILENAME));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			HOST = properties.getProperty("host");
+			PORT = properties.getProperty("port");
+		    DBNAME = properties.getProperty("dbname");
+		    USERNAME = properties.getProperty("username");
+		    PASSWORD = properties.getProperty("password");
+
+		    URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DBNAME;
+
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -46,11 +75,11 @@ public class LoginServlet extends HttpServlet{
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
-		
+
 		try{
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			//if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
-			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
 
 			if(rs.next()){
 				int id = rs.getInt("id");
@@ -112,21 +141,21 @@ public class LoginServlet extends HttpServlet{
 			byte[] digest = sha256.digest();
 			String hashedPass = Base64.encodeBase64String(digest);
 
-			if(conn.isClosed()) conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();	
 
 			//Check if username is already taken
-			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
 
 			if(rs.next()){
 				response.sendError(401);
 			} 
 			else{
 				st = conn.createStatement();
-				st.executeUpdate("INSERT INTO users(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
+				st.executeUpdate("INSERT INTO user(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
 
 				st = conn.createStatement();
-				rs = st.executeQuery("SELECT id, username, password, salt FROM users WHERE username LIKE '" + user + "';");
+				rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
 				if(rs.next()){
 					int id = rs.getInt("id");
 					out.println("{\"id\" : "+ id + ", " + "\"username\" : \""+ user +"\"}");
