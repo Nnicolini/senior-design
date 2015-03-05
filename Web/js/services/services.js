@@ -25,7 +25,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
     function login(username, password){
         var deferred = $q.defer();
 
-        $http.get("https://kaching.xyz:8443/LoginServlet?username=" +
+        $http.get("https://kaching.xyz/api/LoginServlet?username=" +
             encodeURIComponent(username) + "&password=" + 
             encodeURIComponent(password), {cache : true}
         ).success(function(data, status, headers, config){
@@ -44,7 +44,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
     function signup(username, password){
         var deferred = $q.defer();
 
-        $http.post("https://kaching.xyz:8443/LoginServlet", {
+        $http.post("https://kaching.xyz/api/LoginServlet", {
             username: username,
             password: password
         }, {cache : true}
@@ -73,7 +73,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(user_id){
             var deferred = $q.defer();
-            $http.get("https://kaching.xyz:8443/AccountServlet?id=" +
+            $http.get("https://kaching.xyz/api/AccountServlet?id=" +
                 encodeURIComponent(user_id)
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -84,7 +84,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         },
         createAccount : function(newAccount){
             var deferred = $q.defer();
-            $http.post("https://kaching.xyz:8443/AccountServlet", 
+            $http.post("https://kaching.xyz/api/AccountServlet", 
                 newAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -95,7 +95,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         },
         updateAccount : function(updatedAccount){
             var deferred = $q.defer();
-            $http.put("https://kaching.xyz:8443/AccountServlet", 
+            $http.put("https://kaching.xyz/api/AccountServlet", 
                 updatedAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -107,7 +107,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         },
         deleteAccount : function(account_number){
             var deferred = $q.defer();
-            $http.delete("https://kaching.xyz:8443/AccountServlet?number=" +
+            $http.delete("https://kaching.xyz/api/AccountServlet?number=" +
                 encodeURIComponent(account_number)
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -124,7 +124,7 @@ services.factory('AccountsFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(user_id){
             var deferred = $q.defer();
-            $http.get("https://kaching.xyz:8443/AccountServlet?id=" +
+            $http.get("https://kaching.xyz/api/AccountServlet?id=" +
                 encodeURIComponent(user_id), {cache : true}
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -140,7 +140,7 @@ services.factory('HistoryFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(account_number){
             var deferred = $q.defer();
-            $http.get("https://kaching.xyz:8443/HistoryServlet?number=" +
+            $http.get("https://kaching.xyz/api/HistoryServlet?number=" +
                 encodeURIComponent(account_number), {cache : true}
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);

@@ -77,7 +77,7 @@ public class LoginServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 
 		try{
-			//if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
 
@@ -125,9 +125,7 @@ public class LoginServlet extends HttpServlet{
 		PrintWriter out = response.getWriter();
 
 		String user = request.getParameter("username");
-		out.println("username = " + user);
 		String pass = request.getParameter("password");
-		out.println("password = " + pass);
 
 		byte[] saltBytes = new byte[SALT_LENGTH];
 		SecureRandom sr = new SecureRandom();
