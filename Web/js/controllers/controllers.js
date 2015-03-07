@@ -156,66 +156,28 @@ app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', '
 	}
 ]);
 
-app.controller('TestCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountFactory',
-	function($location, $scope, $rootScope, $window, AccountFactory){
+app.controller('TestCtrl', ['$location', '$scope', '$rootScope', '$window', 'TransactionFactory',
+	function($location, $scope, $rootScope, $window, TransactionFactory){
 
-		$scope.account = {};
-		$scope.accounts = [];
+		$scope.result = {};
 
-		$scope.listAccounts = function(){
-			AccountFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
-				.then(function (result){
 
-				for(var i = 0; i < result.accounts.length; i++){
-					//Force decimal values to show 2 decimal places 
-					result.accounts[i].balance = "$" + Number(result.accounts[i].balance).toFixed(2);
-
-					//Force interest rate to also show a % sign
-					result.accounts[i].interest_rate += "%";
-				}
-
-				$scope.accounts = result.accounts;
-			});
-		}
-
-		$scope.createAccount = function(){
-           var newAccount = {   
-                user_id : JSON.parse($window.sessionStorage['userInfo']).user_id,
-                number : '1111111116',
-                balance : 1.00,
-                name : 'Test Account',
-                type : 'Checking',
-                interest_rate : 0.0000
+		$scope.sendTransaction = function(){
+           var transaction = {   
+                number : 'balance',
+                info : {
+                	account_number : '1111111111'
+                }
+ 
             };
 
-			$scope.account = newAccount;
+            TransactionFactory.sendTransaction(transaction)
+            	.then(function (result){
 
-            AccountFactory.createAccount(newAccount);
+            	$scope.result = result;
+            });
 		}
 
-		$scope.updateAccount = function(){
-			var updatedAccount = {   
-                user_id : JSON.parse($window.sessionStorage['userInfo']).user_id,
-                number : '1111111116',
-                balance : 1000.00,
-                name : 'Test Account',
-                type : 'Savings',
-                interest_rate : 10.0000
-			};
-
-			$scope.account = updatedAccount;
-
-            AccountFactory.updateAccount(updatedAccount);
-
-		}
-
-		$scope.deleteAccount = function(){
-
-			$scope.account = {};
-
-			AccountFactory.deleteAccount('1111111116');
-
-		}
 
 	}
 ]);

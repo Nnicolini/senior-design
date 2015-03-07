@@ -151,3 +151,19 @@ services.factory('HistoryFactory', ['$http', '$q', function($http, $q){
         }
     }
 }]);
+
+services.factory('TransactionFactory', ['$http', '$q', function($http, $q){
+    return {
+        sendTransaction : function(transaction){
+            var deferred = $q.defer();
+            $http.post("https://kaching.xyz/api/TransactionServlet", 
+                transaction
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        }
+    }
+}]);
