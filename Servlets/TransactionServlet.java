@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -81,7 +82,7 @@ public class TransactionServlet extends HttpServlet{
 
 		JSONObject json = null;
 		try {
-			json = (JSONObject)new JSONParser().parse(data);
+			json = (JSONObject) new JSONParser().parse(data);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -91,25 +92,30 @@ public class TransactionServlet extends HttpServlet{
 		String accountNumber = (String) info.get("account number");
 		
 		double amount = 0.0;
-
-		out.println("type = " + type);
-		out.println("account number = " + accountNumber);
 		
 		JSONObject returnedJSON = new JSONObject();
 		switch (type){
 			case "balance":
 				returnedJSON = getBalance(accountNumber);
 				break;
-			case "debit":
+			case "withdraw":
 				amount = (Double) info.get("amount");
-				returnedJSON = debit(accountNumber, amount);
+				returnedJSON = withdraw(accountNumber, amount);
 				break;
-			case "credit":
+			case "charge":
 				amount = (Double) info.get("amount");
-				returnedJSON = credit(accountNumber, amount);
+				returnedJSON = withdraw(accountNumber, amount);
+				break;
+			case "deposit":
+				amount = (Double) info.get("amount");
+				returnedJSON = deposit(accountNumber, amount);
+				break;
+			case "payment":
+				amount = (Double) info.get("amount");
+				returnedJSON = deposit(accountNumber, amount);
 				break;
 			case "history":
-				int numDays = (Integer) info.get("day range");
+				long numDays = (Long) info.get("day range");
 				returnedJSON = getHistory(accountNumber, numDays);
 				break;
 		}
@@ -157,17 +163,127 @@ public class TransactionServlet extends HttpServlet{
 		return account;
 	}
 	
-	public JSONObject debit(String accountNumber, double amount){
-		return null;
+	@SuppressWarnings("unchecked")
+	public JSONObject withdraw(String accountNumber, double amount){
+		JSONObject account = new JSONObject();
+		
+		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			Statement st = conn.createStatement();
+
+			String tableName = "account";
+			if(accountNumber.length() > 10) {
+				tableName = "credit_account";
+			}
+			
+			String query = "UPDATE " + tableName + " SET balance=balance-" + amount + " WHERE number='" + accountNumber + "';";
+			st.executeUpdate(query);
+			
+			//Withdraw from cash accounts, charge credit cards
+			String type = (tableName.compareTo("account") == 0) ? "Withdraw" : "Charge";
+			st = conn.createStatement();
+			query = "INSERT INTO history(transaction_type_id, account_number, amount, datetime) "
+					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='"+type+"') ,'"+accountNumber+"', "+amount+", NOW());";
+			st.executeUpdate(query);
+			
+			st = conn.createStatement();
+			query = "SELECT * FROM " + tableName + " WHERE number='" + accountNumber + "';";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()){				
+				account.put("account number", accountNumber);
+				double balance = rs.getDouble("balance");
+				account.put("previous balance", balance + amount);
+				account.put("current balance", balance);
+			}
+
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		
+		return account;
 	}
 	
-	public JSONObject credit(String accountNumber, double amount){
-		return null;
+	@SuppressWarnings("unchecked")
+	public JSONObject deposit(String accountNumber, double amount){
+		JSONObject account = new JSONObject();
+		
+		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			Statement st = conn.createStatement();
+
+			String tableName = "account";
+			if(accountNumber.length() > 10) {
+				tableName = "credit_account";
+			}
+			
+			String query = "UPDATE " + tableName + " SET balance=balance+" + amount + " WHERE number='" + accountNumber + "';";
+			st.executeUpdate(query);
+			
+			//Deposit into cash accounts, make payments on credit cards
+			String type = (tableName.compareTo("account") == 0) ? "Deposit" : "Payment";
+			st = conn.createStatement();
+			query = "INSERT INTO history(transaction_type_id, account_number, amount, datetime) "
+					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='"+type+"') ,'"+accountNumber+"', "+amount+", NOW());";
+			st.executeUpdate(query);
+			
+			st = conn.createStatement();
+			query = "SELECT * FROM " + tableName + " WHERE number='" + accountNumber + "';";
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()){				
+				account.put("account number", accountNumber);
+				double balance = rs.getDouble("balance");
+				account.put("previous balance", balance - amount);
+				account.put("current balance", balance);
+			}
+
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		
+		return account;
 	}
 	
-	public JSONObject getHistory(String accountNumber, int numDays){
-		return null;
+	@SuppressWarnings("unchecked")
+	public JSONObject getHistory(String accountNumber, long numDays){
+		JSONObject json = new JSONObject();
+		
+		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			Statement st = conn.createStatement();
+	
+			String query = "SELECT * "
+					+ "FROM history "
+					+ "LEFT JOIN (transaction_type) ON (transaction_type.id = transaction_type_id) "
+					+ "WHERE account_number='" + accountNumber + "' "
+					+ "AND datetime >= NOW() - INTERVAL " + numDays + " DAY;";
+			ResultSet rs = st.executeQuery(query);
+			
+			json.put("account number", accountNumber);
+			json.put("day range", numDays);
+			JSONArray history = new JSONArray();
+			while(rs.next()){
+				JSONObject entry = new JSONObject();
+				entry.put("transaction type", rs.getString("type"));
+				entry.put("amount", rs.getDouble("amount"));
+				entry.put("datetime", rs.getString("datetime"));
+				history.add(entry);
+			}
+			json.put("history", history);
+			
+			st = conn.createStatement();
+			query = "INSERT INTO history(transaction_type_id, account_number, amount, datetime) "
+					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='Inquiry') ,'"+accountNumber+"', "+numDays+", NOW());";
+			st.executeUpdate(query);
+
+		} catch(Exception e){
+			e.printStackTrace();
+		} 
+		
+		return json;
 	}
 }
+
+
+
 
 

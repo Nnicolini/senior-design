@@ -118,6 +118,20 @@ CREATE TABLE IF NOT EXISTS `kaching`.`credit_account` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `kaching`.`transaction_type`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `kaching`.`transaction_type` ;
+
+CREATE TABLE IF NOT EXISTS `kaching`.`transaction_type` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(20),
+
+  PRIMARY KEY (`id`),
+
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `kaching`.`history`
@@ -126,8 +140,8 @@ DROP TABLE IF EXISTS `kaching`.`history` ;
 
 CREATE TABLE IF NOT EXISTS `kaching`.`history` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `transaction_type_id` INT NOT NULL,
   `account_number` VARCHAR(16) NOT NULL,
-  `transaction_type` VARCHAR(20) NOT NULL,
   `amount` DECIMAL(10,2),
   `datetime` DATETIME,
 
