@@ -272,7 +272,7 @@ public class TransactionServlet extends HttpServlet{
 			
 			st = conn.createStatement();
 			query = "INSERT INTO history(transaction_type_id, account_number, amount, datetime) "
-					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='Inquiry') ,'"+accountNumber+"', "+numDays+", NOW());";
+					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='History') ,'"+accountNumber+"', "+numDays+", NOW());";
 			st.executeUpdate(query);
 
 		} catch(Exception e){
@@ -282,8 +282,4 @@ public class TransactionServlet extends HttpServlet{
 		return json;
 	}
 }
-
-
-
-
 

@@ -1,57 +1,107 @@
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class TextFileSQLQueryExecutor {
 
-	private static final String URL = "jdbc:mysql://128.4.26.194:3306/";
-	private static final String DBNAME = "kaching";
-	private static final String USERNAME = "root";
-	private static final String PASSWORD = "";
+	/**
+	 * DISCLAIMER:
+	 * 		Running this program is much slower than just simply transfering the .sql file
+	 * 		to the destination and importing it with mysql -u X -p X < .sql
+	 */
+
+	private static String URL;
+	private static String HOST;
+	private static String PORT;
+	private static String DBNAME;
+	private static String USERNAME;
+	private static String PASSWORD;
 	
-	private static final String FILENAME = "/Data/generated_data.txt";
+	private static final String PROPERTIESFILENAME = "db.properties";
 	
+	private static Connection conn;
 	
-	public static void main(String[] args) {
+	public TextFileSQLQueryExecutor (){
+		Properties properties = new Properties();
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(PROPERTIESFILENAME);
 		
-		BufferedReader br = null;
-		Connection conn = null;
-		Statement st = null;
-		
-		try{
+		try {
+			properties.load(inputStream);
+			
+			HOST = properties.getProperty("host");
+			PORT = properties.getProperty("port");
+		    DBNAME = properties.getProperty("dbname");
+		    USERNAME = properties.getProperty("username");
+		    PASSWORD = properties.getProperty("password");
+		    
+		    URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DBNAME;
+		    
+		    System.out.println(URL);
+	    
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			conn = DriverManager.getConnection(URL + DBNAME, USERNAME, PASSWORD);
-			st = conn.createStatement();
-		} catch(SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e){
+			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void executeFile(String fileName){
+		BufferedReader br = null;
+		Statement st = null;
+		
 		try {
+			st = conn.createStatement();
+			
 			String currentLine;
-			br = new BufferedReader(new FileReader(FILENAME));
+			br = new BufferedReader(new FileReader(fileName));
 			
 			while((currentLine = br.readLine()) != null){
 				System.out.println(currentLine);
-				if(currentLine.substring(0, 11).compareTo("INSERT INTO") == 0) st.executeUpdate(currentLine);
+				if(!currentLine.isEmpty()){
+					if(currentLine.substring(0, 11).compareTo("INSERT INTO") == 0){
+						st.executeUpdate(currentLine);
+					}
+				}
 			}
-			
-		} catch (IOException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
 				if (br != null) br.close();
 				if (st != null) st.close();
-				if (conn != null) conn.close();
 			} catch (IOException | SQLException ex) {
 				ex.printStackTrace();
 			}
 		}
 		
+		
+	}
+	
+	public static void main(String[] args) {
+		long lStartTime = System.currentTimeMillis();
+		TextFileSQLQueryExecutor t = new TextFileSQLQueryExecutor();
+		
+		t.executeFile("generated_data.sql");
+		
+		long lEndTime = System.currentTimeMillis();
+		long elapsedTime = lEndTime - lStartTime;
+		double seconds = (elapsedTime*1.0)/1000;
+		System.out.println("Complete in " + seconds + " seconds");
+		
+		if (conn != null){
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
