@@ -17,13 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.simple.JSONObject;
 
 public class LoginServlet extends HttpServlet{
 
 	private static final long serialVersionUID = 2702524403574618123L;
 	private static final String PROPERTIESFILENAME = "db.properties";
-	//Length 10 to get a 16 character long salt
-	private static final int SALT_LENGTH = 10;
+	private static final String SPECIALSTRING = "KaChing";
+	private static final int SALT_LENGTH = 10; 	//Length 10 to get a 16 character long salt
 		
 	private static String URL;
 	private static String HOST;
@@ -67,6 +68,7 @@ public class LoginServlet extends HttpServlet{
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
@@ -75,6 +77,8 @@ public class LoginServlet extends HttpServlet{
 
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
+		
+		
 
 		try{
 			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -95,8 +99,18 @@ public class LoginServlet extends HttpServlet{
 				String hashedPass = Base64.encodeBase64String(digest);
 				
 				if(storedPass.compareTo(hashedPass) == 0){
-					out.println("{\"id\" : "+ id + ", " +
-							"\"username\" : \""+ username +"\"}");
+					JSONObject json = new JSONObject();
+					json.put("id", id);
+					json.put("username", username);
+					
+					String tokenString = request.getRemoteAddr() + SPECIALSTRING;
+					sha256.reset();
+					sha256.update(tokenString.getBytes("UTF-8"));
+					digest = sha256.digest();
+					String token = Base64.encodeBase64String(digest);
+					json.put("token", token);
+					
+					out.println(json.toJSONString());
 				}
 				else{
 					response.sendError(401);
@@ -118,14 +132,15 @@ public class LoginServlet extends HttpServlet{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException
 	{
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 
-		String user = request.getParameter("username");
-		String pass = request.getParameter("password");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 
 		byte[] saltBytes = new byte[SALT_LENGTH];
 		SecureRandom sr = new SecureRandom();
@@ -134,7 +149,7 @@ public class LoginServlet extends HttpServlet{
 		
 		try{
 			MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-			String saltedPass = pass + salt;
+			String saltedPass = password + salt;
 			sha256.update(saltedPass.getBytes("UTF-8"));
 			byte[] digest = sha256.digest();
 			String hashedPass = Base64.encodeBase64String(digest);
@@ -143,20 +158,31 @@ public class LoginServlet extends HttpServlet{
 			Statement st = conn.createStatement();	
 
 			//Check if username is already taken
-			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
+			ResultSet rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + username + "';");
 
 			if(rs.next()){
 				response.sendError(401);
 			} 
 			else{
 				st = conn.createStatement();
-				st.executeUpdate("INSERT INTO user(username, password, salt) VALUES('"+user+"','"+hashedPass+"','"+salt+"');");
+				st.executeUpdate("INSERT INTO user(username, password, salt) VALUES('"+username+"','"+hashedPass+"','"+salt+"');");
 
 				st = conn.createStatement();
-				rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + user + "';");
+				rs = st.executeQuery("SELECT id, username, password, salt FROM user WHERE username LIKE '" + username + "';");
 				if(rs.next()){
 					int id = rs.getInt("id");
-					out.println("{\"id\" : "+ id + ", " + "\"username\" : \""+ user +"\"}");
+					JSONObject json = new JSONObject();
+					json.put("id", id);
+					json.put("username", username);
+					
+					String tokenString = request.getRemoteAddr() + SPECIALSTRING;
+					sha256.reset();
+					sha256.update(tokenString.getBytes("UTF-8"));
+					digest = sha256.digest();
+					String token = Base64.encodeBase64String(digest);
+					json.put("token", token);
+					
+					out.println(json.toJSONString());
 				}
 			}
 
