@@ -10,7 +10,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
     function init(){
         if($window.sessionStorage['userInfo']){
             setUserInfo(JSON.parse($window.sessionStorage['userInfo']));
-        }  
+        }
     }
     init();
 
@@ -26,7 +26,7 @@ services.factory('LoginFactory', ['$http', '$location','$q', '$window', function
         var deferred = $q.defer();
 
         $http.get("https://kaching.xyz/api/LoginServlet?username=" +
-            encodeURIComponent(username) + "&password=" + 
+            encodeURIComponent(username) + "&password=" +
             encodeURIComponent(password), {cache : true}
         ).success(function(data, status, headers, config){
             userInfo = {
@@ -84,7 +84,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         },
         createAccount : function(newAccount){
             var deferred = $q.defer();
-            $http.post("https://kaching.xyz/api/AccountServlet", 
+            $http.post("https://kaching.xyz/api/AccountServlet",
                 newAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -95,7 +95,7 @@ services.factory('AccountFactory', ['$http', '$q', function($http, $q){
         },
         updateAccount : function(updatedAccount){
             var deferred = $q.defer();
-            $http.put("https://kaching.xyz/api/AccountServlet", 
+            $http.put("https://kaching.xyz/api/AccountServlet",
                 updatedAccount
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
@@ -156,7 +156,7 @@ services.factory('TransactionFactory', ['$http', '$q', function($http, $q){
     return {
         sendTransaction : function(transaction){
             var deferred = $q.defer();
-            $http.post("https://kaching.xyz/api/TransactionServlet", 
+            $http.post("https://kaching.xyz/api/TransactionServlet",
                 transaction
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);

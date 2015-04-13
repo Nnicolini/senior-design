@@ -4,9 +4,9 @@
 
 var app = angular.module('kaching.controllers', []);
 
-app.controller('MainCtrl', ['$rootScope', '$scope', 
+app.controller('MainCtrl', ['$rootScope', '$scope',
 	function($rootScope, $scope){
-		
+
 		$scope.titleCheck = function(){
 			var title = $rootScope.title;
 			return angular.isUndefined(title) || title === null || title == 'Login' || title == 'Sign Up';
@@ -15,7 +15,7 @@ app.controller('MainCtrl', ['$rootScope', '$scope',
 	}
 ]);
 
-app.controller('LogoutCtrl', ['$location', '$scope', '$window', 'LoginFactory', 
+app.controller('LogoutCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	function($location, $scope, $window, LoginFactory){
 
 		$scope.userInfo = LoginFactory.getUserInfo();
@@ -29,9 +29,9 @@ app.controller('LogoutCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	}
 ]);
 
-app.controller('LoginCtrl', ['$location', '$scope', '$window', 'LoginFactory', 
+app.controller('LoginCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	function($location, $scope, $window, LoginFactory){
-		
+
 		$scope.login = function(){
 			LoginFactory.login($scope.user.username, $scope.user.password)
 				.then(function (result){
@@ -45,7 +45,7 @@ app.controller('LoginCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	}
 ]);
 
-app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory', 
+app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	function($location, $scope, $window, LoginFactory){
 
 		$scope.signup = function(){
@@ -77,14 +77,14 @@ app.controller('SignupCtrl', ['$location', '$scope', '$window', 'LoginFactory',
 	}
 ]);
 
-app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 
+app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory',
 	function($location, $scope, $rootScope, $window, AccountsFactory){
 
 		AccountsFactory.listAll(JSON.parse($window.sessionStorage['userInfo']).user_id)
 			.then(function (result){
 
 				for(var i = 0; i < result.cash_accounts.length; i++){
-					//Force decimal values to show 2 decimal places 
+					//Force decimal values to show 2 decimal places
 					result.cash_accounts[i].balance = "$" + Number(result.cash_accounts[i].balance).toFixed(2);
 
 					//Force interest rate to also show a % sign
@@ -93,7 +93,7 @@ app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 
 				$scope.cash_accounts = result.cash_accounts;
 
 				for(var i = 0; i < result.credit_accounts.length; i++){
-					//Force decimal values to show 2 decimal places 
+					//Force decimal values to show 2 decimal places
 					result.credit_accounts[i].balance = "$" + Number(result.credit_accounts[i].balance).toFixed(2);
 					result.credit_accounts[i].limit = "$" + Number(result.credit_accounts[i].limit).toFixed(2);
 				}
@@ -110,7 +110,7 @@ app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 
 
 app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 'HistoryFactory',
 	function($location, $scope, $rootScope, $window, AccountsFactory, HistoryFactory){
-		
+
 		/*
 		 * Decided to add $rootScope to allow the passing of the account number from the Accounts page
 		 * instead of parsing URL for account number (which could be a security issue similar to SQL injection)
@@ -159,30 +159,24 @@ app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', '
 app.controller('TestCtrl', ['$location', '$scope', '$rootScope', '$window', 'TransactionFactory',
 	function($location, $scope, $rootScope, $window, TransactionFactory){
 
+		$scope.transaction_type_options = ['Balance', 'Withdraw', 'Deposit', 'History'];
+		$scope.transaction = {"type": $scope.transaction_type_options[0], "info": {}};
 		$scope.result = {};
 
-
 		$scope.sendTransaction = function(){
-           var transaction = {   
-                number : 'balance',
-                info : {
-                	account_number : '1111111111'
-                }
- 
-            };
+			console.log($scope.transaction)
+      TransactionFactory.sendTransaction(JSON.stringify($scope.transaction))
+      	.then(function (result){
 
-            TransactionFactory.sendTransaction(transaction)
-            	.then(function (result){
-
-            	$scope.result = result;
-            });
+      	$scope.result = result;
+      });
 		}
 
 
 	}
 ]);
 
-app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountFactory', 
+app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountFactory',
 	function($location, $scope, $rootScope, $window, AccountFactory){
 
 		$scope.accountsList = [];
@@ -191,11 +185,11 @@ app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 
 			.then(function (result){
 
 				for(var i = 0; i < result.cash_accounts.length; i++){
-					//Force decimal values to show 2 decimal places 
+					//Force decimal values to show 2 decimal places
 					result.cash_accounts[i].balance = Number(result.cash_accounts[i].balance).toFixed(2);
 
-					$scope.accountsList.push(result.cash_accounts[i].name + " XXXXXX" 
-						+ result.cash_accounts[i].number.substring(6, 11) + " (Avail. balance = $" 
+					$scope.accountsList.push(result.cash_accounts[i].name + " XXXXXX"
+						+ result.cash_accounts[i].number.substring(6, 11) + " (Avail. balance = $"
 						+ result.cash_accounts[i].balance + ")");
 				}
 
@@ -227,4 +221,3 @@ app.controller('TransferCtrl', ['$location', '$scope', '$rootScope', '$window', 
 		}
 	}
 ]);
-
