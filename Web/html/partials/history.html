@@ -2,6 +2,27 @@
 <div>
 	<h3>History for account number {{historyNumber}}</h3>
 
+	<label for="transaction_type" class="col-sm-2">Transaction Types</label>
+	<div class="btn-group col-sm-10">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="min-width: 600px;">
+					{{transactionType}} <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu scrollable-menu" role="menu">
+					<li ng-repeat="type in transactionTypes" ng-click="filterType(type);" style="text-align: left"><a href="">{{type}}</a></li>
+			</ul>
+	</div>
+	<br>
+
+	<label for="day_range" class="col-sm-2">Day Range</label>
+	<div class="btn-group col-sm-10">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="min-width: 600px;">
+					{{historyOption}} <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu scrollable-menu" role="menu">
+					<li ng-repeat="ho in historyOptions" ng-click="setDayRange(ho);" style="text-align: left"><a href="">{{ho}}</a></li>
+			</ul>
+	</div>
+
 	<table class="table table-striped table-condensed">
         <thead>
             <tr>

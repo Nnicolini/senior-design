@@ -108,45 +108,86 @@ app.controller('AccountsCtrl', ['$location', '$scope', '$rootScope', '$window', 
 	}
 ]);
 
-app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 'HistoryFactory',
-	function($location, $scope, $rootScope, $window, AccountsFactory, HistoryFactory){
+app.controller('HistoryCtrl', ['$location', '$scope', '$rootScope', '$window', 'AccountsFactory', 'HistoryFactory', 'TransactionFactory',
+	function($location, $scope, $rootScope, $window, AccountsFactory, HistoryFactory, TransactionFactory){
 
-		/*
-		 * Decided to add $rootScope to allow the passing of the account number from the Accounts page
-		 * instead of parsing URL for account number (which could be a security issue similar to SQL injection)
-		 * then having to do a check against the user_id's list of all accounts and the given number
-		 */
-
-
-		//Parses the URL path for the desired account number
-		function getNumber(){
-			return $location.path().split("/")[2];
-		}
-
-		$scope.history = [];
-
-		HistoryFactory.listAll($rootScope.historyNumber)
-			.then(function(result){
-
-				for(var i = 0; i < result.history.length; i++){
-					$scope.history.push(result.history[i]);
-
-					//Set the color of the amount displayed
-					//Force decimal values to show 2 decimal places
-					if(Number(result.history[i].amount) > 0){
-						$scope.history[i].display_color = "green";
-						$scope.history[i].amount = "+$" + Number(result.history[i].amount).toFixed(2);
-					}
-					else if (Number(result.history[i].amount) < 0){
-						$scope.history[i].display_color = "red";
-						$scope.history[i].amount = "-$" + Number(-result.history[i].amount).toFixed(2);
-					} else{
-						$scope.history[i].display_color = "white";
-						$scope.history[i].amount = "$" + Number(result.history[i].amount).toFixed(2);
-					}
+		$scope.dayRange = 90;
+		$scope.historyOption = 'Last 90 Days';
+		$scope.historyOptions = [
+			'Last 30 Days',
+			'Last 60 Days',
+			'Last 90 Days',
+			'Last 6 Months',
+			'Last 12 Months',
+			'Last 18 Months'
+		];
+		$scope.transactionType = 'All';
+		$scope.transactionTypes = ['All'];
+		TransactionFactory.getTransactionTypes().then(function(result){
+			  for(var i = 0; i < result.types.length; i++){
+					$scope.transactionTypes.push(result.types[i]);
 				}
 
-			});
+		});
+
+		$scope.history = [];	//display copy
+		var history = [];	//actual copy
+		getHistory($rootScope.historyNumber, $scope.dayRange);
+
+	  function getHistory(accountNumber, dayRange){
+				HistoryFactory.listInDayRange(accountNumber, dayRange)
+					.then(function(result){
+
+						$scope.history = [];
+						for(var i = 0; i < result.history.length; i++){
+							$scope.history.push(result.history[i]);
+
+							//Set the color of the amount displayed
+							//Force decimal values to show 2 decimal places
+							if(result.history[i].transaction_type == "History"){
+								$scope.history[i].amount = Number(result.history[i].amount) + " days";
+							}
+							else if(Number(result.history[i].amount) > 0){
+								$scope.history[i].display_color = "green";
+								$scope.history[i].amount = "+$" + Number(result.history[i].amount).toFixed(2);
+							}
+							else if (Number(result.history[i].amount) < 0){
+								$scope.history[i].display_color = "red";
+								$scope.history[i].amount = "-$" + Number(-result.history[i].amount).toFixed(2);
+							} else{
+								$scope.history[i].display_color = "white";
+								$scope.history[i].amount = "$" + Number(result.history[i].amount).toFixed(2);
+							}
+						}
+						history = $scope.history;
+
+				});
+		}
+
+		$scope.filterType = function(type){
+			$scope.transactionType = type;
+			$scope.history = history;
+			if(type != "All"){
+				  var newHistory = [];
+				  for(var i = 0; i < $scope.history.length; i++){
+						  if($scope.history[i].transaction_type == type){
+								  newHistory.push($scope.history[i]);
+							}
+					}
+					$scope.history = newHistory;
+			}
+		}
+
+		$scope.setDayRange = function(historyOption){
+				$scope.historyOption = historyOption;
+				var stringArray = historyOption.split(" ");
+				var dayRange = parseInt(stringArray[1]);
+				if(stringArray[2] == "Months")
+				    dayRange = dayRange * 30;
+				$scope.dayRange = dayRange;
+				console.log(dayRange);
+				getHistory($rootScope.historyNumber, $scope.dayRange);
+		}
 
 		//Callback function for the "Go back" button to return to the Accounts page
 		$scope.cancel = function(){

@@ -60,13 +60,32 @@ public class TransactionServlet extends HttpServlet{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException
 	{
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 
-		out.println("Handled GET request");
+		JSONObject returnedJSON = new JSONObject();
+
+		try{
+			if(conn.isClosed()) conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			Statement st = conn.createStatement();
+			String query = "SELECT DISTINCT type FROM transaction_type;";
+			ResultSet rs = st.executeQuery(query);
+
+			JSONArray types = new JSONArray();
+			while(rs.next()){
+				  types.add(rs.getString("type"));
+			}
+			returnedJSON.put("types", types);
+
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+
+		out.println(returnedJSON.toJSONString());
 	}
 
 	@SuppressWarnings("unchecked")

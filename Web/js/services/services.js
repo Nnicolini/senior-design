@@ -140,8 +140,31 @@ services.factory('HistoryFactory', ['$http', '$q', function($http, $q){
     return {
         listAll : function(account_number){
             var deferred = $q.defer();
-            $http.get("https://kaching.xyz/api/HistoryServlet?number=" +
-                encodeURIComponent(account_number), {cache : true}
+            $http.post("https://kaching.xyz/api/TransactionServlet",
+                JSON.stringify({
+                    "type" : "history",
+                    "info" : {
+                        "account_number" : account_number,
+                        "day_range" : 365
+                    }
+                })
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        },
+        listInDayRange : function(account_number, day_range){
+            var deferred = $q.defer();
+            $http.post("https://kaching.xyz/api/TransactionServlet",
+                JSON.stringify({
+                  "type" : "history",
+                  "info" : {
+                      "account_number" : account_number,
+                      "day_range" : day_range
+                  }
+                })
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){
@@ -158,6 +181,17 @@ services.factory('TransactionFactory', ['$http', '$q', function($http, $q){
             var deferred = $q.defer();
             $http.post("https://kaching.xyz/api/TransactionServlet",
                 transaction
+            ).success(function(data, status, headers, config){
+                deferred.resolve(data);
+            }).error(function(data, status, headers, config){
+                deferred.reject(data);
+            });
+            return deferred.promise;
+        },
+        getTransactionTypes : function(){
+            var deferred = $q.defer();
+            $http.get("https://kaching.xyz/api/TransactionServlet",
+                {cache : true}
             ).success(function(data, status, headers, config){
                 deferred.resolve(data);
             }).error(function(data, status, headers, config){
