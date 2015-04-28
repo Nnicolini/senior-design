@@ -18,3 +18,6 @@ Technologies Leveraged: <br>
   Back-end technologies: Java, Python, Apache Tomcat <br>
   Database technologies: MySQL <br>
   Version control: git <br>
+
+For more information view the wiki! <br>
+  https://github.com/andersvw/senior-design/wiki

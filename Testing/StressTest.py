@@ -2,8 +2,8 @@ from __future__ import division
 from threading import Thread
 import requests, json, time
 
-url = 'http://api.kaching.xyz/TransactionServlet'
-#url = 'http://128.4.26.233:8080/TransactionServlet'
+#url = 'http://api.kaching.xyz/TransactionServlet'
+url = 'http://128.4.26.233:8080/TransactionServlet'
 balance = {
     "type" : "balance",
     "info" : {
@@ -72,8 +72,8 @@ class ThreadWithReturnValue(Thread):
 def main():
     startMain = time.time()
 
-    numThreads = 25     # Number of threads to start
-    numRequests = 20    # Number of requests per thread
+    numThreads = 25      # Number of threads to start
+    numRequests = 20     # Number of requests per thread
 
     # Dispatch threads
     options = [balance, deposit, withdraw] #payload options
