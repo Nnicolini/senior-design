@@ -120,11 +120,11 @@ public class TransactionServlet extends HttpServlet{
 				break;
 			case "withdraw":
 				amount = (Double) info.get("amount");
-				returnedJSON = withdraw(accountNumber, amount);
+				returnedJSON = withdraw(out, accountNumber, amount);
 				break;
 			case "charge":
 				amount = (Double) info.get("amount");
-				returnedJSON = withdraw(accountNumber, amount);
+				returnedJSON = withdraw(out, accountNumber, amount);
 				break;
 			case "deposit":
 				amount = (Double) info.get("amount");
@@ -185,7 +185,7 @@ public class TransactionServlet extends HttpServlet{
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject withdraw(String accountNumber, double amount){
+	public JSONObject withdraw(PrintWriter out, String accountNumber, double amount){
 		JSONObject account = new JSONObject();
 
 		try{
@@ -197,25 +197,34 @@ public class TransactionServlet extends HttpServlet{
 				tableName = "credit_account";
 			}
 
-			String query = "UPDATE " + tableName + " SET balance=balance-" + amount + " WHERE number='" + accountNumber + "';";
+			//Check if current balance is above the withdrawal amount
+			String query = "SELECT * FROM " + tableName + " WHERE number='" + accountNumber + "';";
+			ResultSet rs = st.executeQuery(query);
+			double balance = 0;
+			while(rs.next()){
+				balance = rs.getDouble("balance");
+				if(balance < amount){
+					account.put("error", "insufficient funds");
+					return account;
+				}
+			}
+
+			//Update the account balance
+			st = conn.createStatement();
+			query = "UPDATE " + tableName + " SET balance=balance-" + amount + " WHERE number='" + accountNumber + "';";
 			st.executeUpdate(query);
 
-			//Withdraw from cash accounts, charge credit cards
+			//Keep history of withdraw from cash accounts, charge for credit cards
 			String type = (tableName.compareTo("account") == 0) ? "Withdraw" : "Charge";
 			st = conn.createStatement();
 			query = "INSERT INTO history(transaction_type_id, account_number, amount, datetime) "
 					+ "VALUES((SELECT id FROM transaction_type WHERE `type`='"+type+"') ,'"+accountNumber+"', "+amount+", NOW());";
 			st.executeUpdate(query);
 
-			st = conn.createStatement();
-			query = "SELECT * FROM " + tableName + " WHERE number='" + accountNumber + "';";
-			ResultSet rs = st.executeQuery(query);
-			while(rs.next()){
-				account.put("account number", accountNumber);
-				double balance = rs.getDouble("balance");
-				account.put("previous balance", balance + amount);
-				account.put("current balance", balance);
-			}
+			//Build return json
+			account.put("account_number", accountNumber);
+			account.put("previous_balance", balance);
+			account.put("current_balance", balance-amount);
 
 		} catch(Exception e){
 			e.printStackTrace();
@@ -251,10 +260,10 @@ public class TransactionServlet extends HttpServlet{
 			query = "SELECT * FROM " + tableName + " WHERE number='" + accountNumber + "';";
 			ResultSet rs = st.executeQuery(query);
 			while(rs.next()){
-				account.put("account number", accountNumber);
+				account.put("account_number", accountNumber);
 				double balance = rs.getDouble("balance");
-				account.put("previous balance", balance - amount);
-				account.put("current balance", balance);
+				account.put("previous_balance", balance - amount);
+				account.put("current_balance", balance);
 			}
 
 		} catch(Exception e){

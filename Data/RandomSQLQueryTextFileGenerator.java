@@ -37,7 +37,7 @@ public class RandomSQLQueryTextFileGenerator {
 	private static final long beginTime = Timestamp.valueOf("2015-06-01 00:00:00").getTime();
 	private static final long endTime = Timestamp.valueOf("2020-01-01 00:00:00").getTime();
 
-	//Numbers of ____ to create
+	//Number of ____ to create
 	private static final int NUMUSERS = 1000;
 	private static final int NUMACCOUNTS = 5000;
 
@@ -134,7 +134,7 @@ public class RandomSQLQueryTextFileGenerator {
 		//Key: account number, Value: count (1)
 		HashMap<String, Integer> accounts = new HashMap<String, Integer>();
 
-		//Insert all manual_data account numbers
+		//Insert all manual_data account numbers (so that duplicates will not be generated)
 		accounts.put("1111111111", 1);
 		accounts.put("1111111112", 1);
 		accounts.put("1111111113", 1);
@@ -196,7 +196,7 @@ public class RandomSQLQueryTextFileGenerator {
 			sb.append(");");
 
 			lines.add(sb.toString());
-			lines.add("INSERT INTO history(transaction_type_id, account_number, amount, datetime) VALUES(7, '" + number + "', 0.00, NOW());")
+			lines.add("INSERT INTO history(transaction_type_id, account_number, amount, datetime) VALUES(7, '" + number + "', 0.00, NOW());");
 		}
 
 		writeLinesToFile(FILENAME, lines, true);
@@ -287,7 +287,7 @@ public class RandomSQLQueryTextFileGenerator {
 			sb.append(");");
 
 			lines.add(sb.toString());
-			lines.add("INSERT INTO history(transaction_type_id, account_number, amount, datetime) VALUES(7, '" + number + "', 0.00, NOW());")
+			lines.add("INSERT INTO history(transaction_type_id, account_number, amount, datetime) VALUES(7, '" + number + "', 0.00, NOW());");
 		}
 
 		writeLinesToFile(FILENAME, lines, true);
