@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
+        version="2.4"> 
+
+        <!-- ========================================================== --> 
+        <!-- General --> 
+        <!-- ========================================================== --> 
+
+        <!-- Name the application --> 
+       <display-name>KaChing</display-name> 
+       <description>An application to serve as the data access layer for the KaChing website</description> 
+
+        <!-- This app is cluster-ready --> 
+        <distributable /> 
+
+        <!-- Set timeout to 120 minutes --> 
+        <session-config> 
+                <session-timeout>120</session-timeout> 
+        </session-config> 
+
+
+
+	<!-- Filters -->
+
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+   
+
+	<!-- ========================================================== --> 
+        <!-- Servlets --> 
+        <!-- ========================================================== --> 
+
+	<servlet>
+		<servlet-name>AccountServlet</servlet-name>
+		<servlet-class>AccountServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AccountServlet</servlet-name>
+		<url-pattern>/AccountServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/LoginServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>HistoryServlet</servlet-name>
+		<servlet-class>HistoryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HistoryServlet</servlet-name>
+		<url-pattern>/HistoryServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TransactionServlet</servlet-name>
+		<servlet-class>TransactionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TransactionServlet</servlet-name>
+		<url-pattern>/TransactionServlet</url-pattern>
+	</servlet-mapping>		
+
+</web-app>
