@@ -1,6 +1,3 @@
-KaChing
-====
-
 ![Alt text](https://github.com/andersvw/senior-design/blob/master/Web/images/KaChing-logo-1.png)
 
 CPEG Senior Design (2014-2015)
